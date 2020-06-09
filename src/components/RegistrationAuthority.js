@@ -108,7 +108,7 @@ class RegistrationAuthority extends Component {
 
     getRegistrationAuthority(web3) {
         const address = addresses.registrationAuthority;
-        const abi = JSON.parse(RegistrationAuthorityContract.interface);
+        const abi = RegistrationAuthorityContract.abi;
         const contract = new web3.eth.Contract(abi, address);
         return contract;
     }

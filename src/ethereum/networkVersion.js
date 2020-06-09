@@ -1,3 +1,3 @@
 module.exports = {
-    version: "4" // Rinkeby
+    version: "5777" // Ganache
 };

@@ -100,7 +100,7 @@ class CreateNewElection extends Component {
 
     getElectionFactory(web3) {
         const address = addresses.electionFactory;
-        const abi = JSON.parse(ElectionFactory.interface);
+        const abi = ElectionFactory.abi;
         const contract = new web3.eth.Contract(abi, address);
         return contract;
     }

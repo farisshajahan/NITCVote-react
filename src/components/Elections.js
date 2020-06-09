@@ -118,26 +118,27 @@ class Elections extends Component {
                 this.setState(function(prevState, props) {
                     return { wrongNetwork: true };
                 });
+                console.log(err)
             }
         }
     }
 
     getRegistrationAuthority(web3) {
         const address = addresses.registrationAuthority;
-        const abi = JSON.parse(RegistrationAuthority.interface);
+        const abi = RegistrationAuthority.abi;
         const contract = new web3.eth.Contract(abi, address);
         return contract;
     }
 
     getElectionFactory(web3) {
         const address = addresses.electionFactory;
-        const abi = JSON.parse(ElectionFactory.interface);
+        const abi = ElectionFactory.abi;
         const contract = new web3.eth.Contract(abi, address);
         return contract;
     }
 
     getElectionContract(web3, address) {
-        const abi = JSON.parse(Election.interface);
+        const abi = Election.abi;
         const contract = new web3.eth.Contract(abi, address);
         return contract;
     }
