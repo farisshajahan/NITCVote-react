@@ -12,6 +12,7 @@ import {
 } from "semantic-ui-react";
 import ProcessingModal from "../ProcessingModal";
 import crypto from "crypto";
+import { join } from "shamir";
 
 class OptionsTablePastElection extends Component {
     state = {
@@ -24,7 +25,8 @@ class OptionsTablePastElection extends Component {
         publishedResults: [],
         privateKey: "",
         privateKeyChangedOnce: false,
-        inputsValid: false
+        inputsValid: false,
+        keyParts: [{share: ""}, {share:""}]
     };
 
     async componentDidMount() {
@@ -63,7 +65,13 @@ class OptionsTablePastElection extends Component {
         this.setState({ modalOpen: true, modalState: "processing" });
 
         try {
-            const privateKey = this.state.privateKey;
+            const utf8Decoder = new TextDecoder();
+            let parts = {};
+            for (let j in this.state.keyParts) {
+                let part = JSON.parse(this.state.keyParts[j]['share']);
+                parts[part['id']] = Buffer.from(part['share'], 'hex');
+            }
+            var privateKey = utf8Decoder.decode(join(parts));
 
             // Get the list of addresses that voted
             const voters = await this.props.contract.methods
@@ -108,7 +116,7 @@ class OptionsTablePastElection extends Component {
                 if (voteInvalid) { continue; }
                 // Adding to tally
                 if (oneSeen) {
-                    tallyForEachOption[vote.findIndex(elem => elem == 1)] += 1;
+                    tallyForEachOption[vote.findIndex(elem => elem === 1)] += 1;
                     console.log(tallyForEachOption);
                 }
             }
@@ -145,6 +153,27 @@ class OptionsTablePastElection extends Component {
             this.setState({ modalState: "error", errorMessage: err.message });
         }
     };
+    
+    handleAddKeyShare = () => {
+        this.setState({
+            keyParts: this.state.keyParts.concat([{share:""}])
+        })
+    }
+
+    handleRemoveKeyShare = (index) => () => {
+        this.setState({
+            keyParts: this.state.keyParts.filter((part, i) => index !== i)
+        })
+    }
+
+    handleKeyPartChange = (index) => evt => {
+        const newKeyParts = this.state.keyParts.map((part, idx) => {
+            if (idx !== index) return part;
+            return {share: evt.target.value};
+        });
+
+        this.setState({ keyParts: newKeyParts });
+    }
 
     handleModalClose = () => {
         this.setState({ modalOpen: false });
@@ -170,24 +199,43 @@ class OptionsTablePastElection extends Component {
                             Decrypt and Publish
                         </Header>
                         <Segment attached>
-                            <Form.TextArea
-                                label="Private key"
-                                name="privateKey"
-                                value={this.state.privateKey}
-                                onChange={this.handleChange}
-                                error={
-                                    !this.state.privateKey &&
-                                    this.state.privateKeyChangedOnce
-                                }
+                            { this.state.keyParts.map((part, i) => (
+                                <div>
+                                <Form.TextArea
+                                label={`Private Key Share ${i+1}`}
+                                name={`privatekey-${i+1}`}
+                                partId={i}
+                                value={part.share}
+                                onChange={this.handleKeyPartChange(i)}
                                 style={{ minHeight: 100 }}
-                            />
+                                />
+                                <Button
+                                type="button"
+                                onClick={this.handleRemoveKeyShare(i)}
+                                className="small"
+                                color="red"
+                                style={ {marginBottom: "5px"} }
+                                >
+                                    Remove
+                                </Button>
+                                </div>
+                            ))}
+                            <Button
+                                type="button"
+                                onClick={this.handleAddKeyShare}
+                                className="large"
+                                fluid
+                                style={ {margin: "10px 0px"} }
+                                >
+                                    Add a share
+                            </Button>
                             <Button
                                 animated="fade"
                                 type="submit"
                                 fluid
                                 loading={this.state.modalState === "processing"}
                                 color="green"
-                                disabled={!this.state.inputsValid}
+                                //disabled={!this.state.inputsValid}
                             >
                                 <Button.Content visible>
                                     Decrypt and Publish
