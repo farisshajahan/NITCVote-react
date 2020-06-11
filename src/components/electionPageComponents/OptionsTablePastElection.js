@@ -11,8 +11,7 @@ import {
     Header
 } from "semantic-ui-react";
 import ProcessingModal from "../ProcessingModal";
-import paillier from "paillier-js";
-import BigInt from "big-integer";
+import crypto from "crypto";
 
 class OptionsTablePastElection extends Component {
     state = {
@@ -64,19 +63,7 @@ class OptionsTablePastElection extends Component {
         this.setState({ modalOpen: true, modalState: "processing" });
 
         try {
-            // Create private and public key
-            const privateKeyCredentials = JSON.parse(this.state.privateKey);
-            const privateKey = new paillier.PrivateKey(
-                BigInt(privateKeyCredentials.lambda),
-                BigInt(privateKeyCredentials.mu),
-                BigInt(privateKeyCredentials._p),
-                BigInt(privateKeyCredentials._q),
-                privateKeyCredentials.publicKey
-            );
-            const publicKey = new paillier.PublicKey(
-                BigInt(privateKeyCredentials.publicKey.n),
-                BigInt(privateKeyCredentials.publicKey.g)
-            );
+            const privateKey = this.state.privateKey;
 
             // Get the list of addresses that voted
             const voters = await this.props.contract.methods
@@ -87,80 +74,50 @@ class OptionsTablePastElection extends Component {
                 throw new Error("No votes found.");
             }
 
-            // Get vote of each voter
-            let encryptedVotes = [];
+            let tallyForEachOption = new Array(this.props.options.length).fill(0);
+            let vote;
             for (let i = 0; i < voters.length; i++) {
                 this.setState({
                     statusMessage:
-                        "Retrieving encrypted vote " +
+                        "Retrieving and tallying vote " +
                         (i + 1) +
                         " of " +
                         voters.length
                 });
-
-                encryptedVotes.push(
-                    await this.props.contract.methods
-                        .getEncryptedVoteOfVoter(voters[i])
-                        .call()
-                );
-            }
-
-            // Organize encrypted votes in arrays
-            let votesForEachOption = [];
-            for (let i = 0; i < encryptedVotes.length; i++) {
-                votesForEachOption.push(JSON.parse(encryptedVotes[i]));
-            }
-
-            // Tallying encrypted votes
-            let tallyForEachOption = new Array(this.props.options.length);
-
-            for (let i = 0; i < votesForEachOption.length; i++) {
-                this.setState({
-                    statusMessage:
-                        "Tallying encrypted vote " +
-                        (i + 1) +
-                        " of " +
-                        votesForEachOption.length
-                });
-
-                for (let j = 0; j < this.props.options.length; j++) {
-                    if (i === 0) {
-                        tallyForEachOption[j] = BigInt(
-                            votesForEachOption[i][j]
-                        );
-                    } else {
-                        tallyForEachOption[j] = publicKey.addition(
-                            tallyForEachOption[j],
-                            votesForEachOption[i][j]
-                        );
+                
+                var voteInvalid = false;
+                var oneSeen = false;
+                vote = JSON.parse(crypto.privateDecrypt(privateKey, Buffer.from(await this.props.contract.methods
+                         .getEncryptedVoteOfVoter(voters[i])
+                         .call(), 'hex'))).slice(0, this.props.options.length);
+                // Validating the vote
+                for (let j in vote) {
+                    if (vote[j] !== 0 && vote[j] !== 1) {
+                        voteInvalid = true;
+                        break;
                     }
+                    if (vote[j] === 1) {
+                        if (oneSeen === false) {
+                            oneSeen = true;
+                        } else {
+                            voteInvalid = true;
+                            break;
+                        }
+                    }
+                }
+                if (voteInvalid) { continue; }
+                // Adding to tally
+                if (oneSeen) {
+                    tallyForEachOption[vote.findIndex(elem => elem == 1)] += 1;
+                    console.log(tallyForEachOption);
                 }
             }
 
-            // Decrypt tallies
-            let decryptedResultForEachOption = new Array(
-                this.props.options.length
-            );
-
-            for (let i = 0; i < tallyForEachOption.length; i++) {
-                this.setState({
-                    statusMessage:
-                        "Decrypting vote " +
-                        (i + 1) +
-                        " of " +
-                        tallyForEachOption.length
-                });
-
-                decryptedResultForEachOption[i] = privateKey.decrypt(
-                    tallyForEachOption[i]
-                );
-            }
-
-            // Verifying number of votes matches voters
-            const sumOfVotes = decryptedResultForEachOption.reduce(
+            const sumOfVotes = tallyForEachOption.reduce(
                 (a, b) => a + b,
                 0
             );
+
 
             if (sumOfVotes !== voters.length) {
                 throw new Error(
@@ -170,8 +127,8 @@ class OptionsTablePastElection extends Component {
 
             // Convert to regular string array
             let result = new Array(this.props.options.length);
-            for (let i = 0; i < decryptedResultForEachOption.length; i++) {
-                result[i] = decryptedResultForEachOption[i].toString();
+            for (let i = 0; i < tallyForEachOption.length; i++) {
+                result[i] = tallyForEachOption[i].toString();
             }
 
             // Publish results

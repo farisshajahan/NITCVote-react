@@ -5,8 +5,6 @@ import {
     Form,
     Button,
     Segment,
-    Icon,
-    Message
 } from "semantic-ui-react";
 import { DateTimeInput } from "semantic-ui-calendar-react";
 import ElectionFactory from "../ethereum/ElectionFactory.json";
@@ -14,8 +12,6 @@ import convertTimeStringToDate from "../utils/convertTimeStringToDate";
 import addresses from "../ethereum/addresses";
 import Web3 from "web3";
 import ProcessingModal from "./ProcessingModal";
-import paillier from "paillier-js";
-import FileSaver from "file-saver";
 
 class CreateNewElection extends Component {
     state = {
@@ -33,14 +29,12 @@ class CreateNewElection extends Component {
         modalOpen: false,
         modalState: "",
         errorMessage: "",
-        generatedKeyPair: false,
-        publicKey: {},
-        privateKey: {}
+        publicKey: "",
+        publicKeyChangedOnce: false
     };
 
     async componentDidMount() {
         await this.loadContract();
-        this.generateKeys();
     }
 
     async loadContract() {
@@ -89,15 +83,6 @@ class CreateNewElection extends Component {
         }
     }
 
-    generateKeys() {
-        const { publicKey, privateKey } = paillier.generateRandomKeys(2048);
-        this.setState({
-            publicKey,
-            privateKey,
-            generatedKeyPair: true
-        });
-    }
-
     getElectionFactory(web3) {
         const address = addresses.electionFactory;
         const abi = ElectionFactory.abi;
@@ -123,6 +108,9 @@ class CreateNewElection extends Component {
             case "timeLimit":
                 this.setState({ timeLimitChangedOnce: true });
                 break;
+            case "publicKey":
+                this.setState({ publicKeyChangedOnce: true });
+                break;
             default:
                 break;
         }
@@ -133,7 +121,8 @@ class CreateNewElection extends Component {
                 this.state.title &&
                 this.state.description &&
                 this.state.startTime &&
-                this.state.timeLimit
+                this.state.timeLimit &&
+                this.state.publicKey
             ) {
                 this.setState({ inputsValid: true });
             } else {
@@ -154,7 +143,7 @@ class CreateNewElection extends Component {
                     this.state.description,
                     convertTimeStringToDate(this.state.startTime),
                     convertTimeStringToDate(this.state.timeLimit),
-                    JSON.stringify(this.state.publicKey)
+                    this.state.publicKey
                 )
                 .send({ from: this.state.userAddresses[0] });
 
@@ -166,19 +155,6 @@ class CreateNewElection extends Component {
 
     handleModalClose = () => {
         this.setState({ modalOpen: false });
-    };
-
-    copyKey = () => {
-        navigator.clipboard.writeText(
-            JSON.stringify(this.state.privateKey, null, 2)
-        );
-    };
-
-    saveKeyToFile = () => {
-        let blob = new Blob([JSON.stringify(this.state.privateKey, null, 2)], {
-            type: "application/json;charset=utf-8"
-        });
-        FileSaver.saveAs(blob, "privatekey.json");
     };
 
     render() {
@@ -272,57 +248,19 @@ class CreateNewElection extends Component {
                         Encryption Settings
                     </Header>
                     <Segment attached>
-                        <Message warning>
-                            <Message.Header>
-                                Keep this information secure
-                            </Message.Header>
-                            <Message.List>
-                                <Message.Item>
-                                    Save the below text somewhere secure.
-                                </Message.Item>
-                                <Message.Item>
-                                    If you lose the private key, the election
-                                    results can't be decrypted.
-                                </Message.Item>
-                                <Message.Item>
-                                    Never share the private key with anyone.
-                                    This would expose everyone's vote.
-                                </Message.Item>
-                            </Message.List>
-                        </Message>
                         <Form.TextArea
-                            label="Private and Public key"
-                            value={
-                                this.state.generatedKeyPair
-                                    ? JSON.stringify(
-                                          this.state.privateKey,
-                                          null,
-                                          2
-                                      )
-                                    : "Generating keys..."
+                            label="Public key"
+                            name="publicKey"
+                            placeholder="Enter Public key for encryption"
+                            value={this.state.publicKey}
+                            onChange={this.handleChange}
+                            fluid
+                            error={
+                                !this.state.publicKey && this.state.publicKeyChangedOnce
                             }
-                            readOnly
                             style={{ minHeight: 100 }}
                         />
 
-                        <Button
-                            type="button"
-                            icon
-                            labelPosition="left"
-                            onClick={this.copyKey}
-                        >
-                            <Icon name="copy" />
-                            Copy
-                        </Button>
-                        <Button
-                            type="button"
-                            icon
-                            labelPosition="left"
-                            onClick={this.saveKeyToFile}
-                        >
-                            <Icon name="save" />
-                            Save
-                        </Button>
                     </Segment>
 
                     <Segment vertical>

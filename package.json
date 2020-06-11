@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "./",
   "dependencies": {
+    "crypto": "^1.0.1",
     "file-saver": "^2.0.2",
     "paillier-js": "^0.9.2",
     "react": "^16.9.0",
