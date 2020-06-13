@@ -5,9 +5,10 @@ import { Menu, Icon, Dropdown } from "semantic-ui-react";
 class Header extends Component {
     render() {
         return (
-            <Menu icon>
+            <div>
+            <Menu>
                 <Menu.Item header as={Link} to="/">
-                    ethVote
+                    Home
                 </Menu.Item>
                 <Menu.Menu position="right">
                     <Dropdown item text="Help">
@@ -24,13 +25,15 @@ class Header extends Component {
                         About
                     </Menu.Item>
                     <Menu.Item
-                        href="//github.com/johannesmols/ethVote"
+                        href="//github.com/farisshajahan/NTICVote"
                         target="_blank"
                     >
                         <Icon name="github" />
                     </Menu.Item>
                 </Menu.Menu>
             </Menu>
+            <h1 style={{textAlign: "center"}}>NITC<span style={ {color:"#3283a8"} }>Vote</span></h1>
+            </div>
         );
     }
 }
