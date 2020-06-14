@@ -8,7 +8,7 @@ export default function ManagerInfoMessage() {
             <Button basic floated="right" as={Link} to="/new">
                 Create New
             </Button>
-            <Message.Header>You are the Election Manager.</Message.Header>
+            <Message.Header>Create a new Election</Message.Header>
             <Message.List>
                 <Message.Item>
                     To create a new election, press the button to the right.

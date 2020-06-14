@@ -6,9 +6,9 @@ export default function RegAuthInfoMessage() {
     return (
         <Message info>
             <Button basic floated="right" as={Link} to="/registrationauthority">
-                Overview
+                Registration
             </Button>
-            <Message.Header>You are the Registration Authority.</Message.Header>
+            <Message.Header>Register Voters</Message.Header>
             <p>
                 You can manage and see registered voters by clicking on the
                 button to the right.

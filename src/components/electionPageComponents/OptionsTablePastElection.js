@@ -201,23 +201,22 @@ class OptionsTablePastElection extends Component {
                         <Segment attached>
                             { this.state.keyParts.map((part, i) => (
                                 <div>
+                                <React.Fragment>
+                                    <strong>Private Key Share {i+1}</strong> 
+                                    <Icon 
+                                      onClick={this.handleRemoveKeyShare(i)} 
+                                      name="trash alternate"
+                                      color="red"
+                                      style={{ cursor: "pointer"}}
+                                    />
+                                </React.Fragment>
                                 <Form.TextArea
-                                label={`Private Key Share ${i+1}`}
                                 name={`privatekey-${i+1}`}
                                 partId={i}
                                 value={part.share}
                                 onChange={this.handleKeyPartChange(i)}
-                                style={{ minHeight: 100 }}
+                                style={{ minHeight: 100, marginBottom: "20px"}}
                                 />
-                                <Button
-                                type="button"
-                                onClick={this.handleRemoveKeyShare(i)}
-                                className="small"
-                                color="red"
-                                style={ {marginBottom: "5px"} }
-                                >
-                                    Remove
-                                </Button>
                                 </div>
                             ))}
                             <Button

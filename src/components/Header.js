@@ -25,7 +25,7 @@ class Header extends Component {
                         About
                     </Menu.Item>
                     <Menu.Item
-                        href="//github.com/farisshajahan/NTICVote"
+                        href="//github.com/farisshajahan/NITCVote"
                         target="_blank"
                     >
                         <Icon name="github" />

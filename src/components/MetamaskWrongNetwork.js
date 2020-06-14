@@ -7,7 +7,7 @@ export default function MetamaskWrongNetwork() {
         <Segment placeholder color="orange">
             <Header icon>
                 <Icon name="warning sign" />
-                Please change to the Rinkeby Test Network in MetaMask.
+                An error occurred. Please verify the blockchain network in MetaMask.
             </Header>
             <Button as={Link} animated="fade" to={`/`} color="orange">
                 <Button.Content visible>Now take me back</Button.Content>
