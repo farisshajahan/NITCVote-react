@@ -11,18 +11,11 @@ class Header extends Component {
                     Home
                 </Menu.Item>
                 <Menu.Menu position="right">
-                    <Dropdown item text="Help">
-                        <Dropdown.Menu>
-                            <Dropdown.Item as={Link} to="/metamask">
-                                Metamask
-                            </Dropdown.Item>
-                            <Dropdown.Item as={Link} to="/register">
-                                Register to vote
-                            </Dropdown.Item>
-                        </Dropdown.Menu>
-                    </Dropdown>
-                    <Menu.Item as={Link} to="/about" position="right">
-                        About
+                    <Menu.Item as={Link} to="/metamask">
+                        Install Metamask
+                    </Menu.Item>
+                    <Menu.Item as={Link} to="/register">
+                        Register to vote
                     </Menu.Item>
                     <Menu.Item
                         href="//github.com/farisshajahan/NITCVote"
@@ -32,7 +25,11 @@ class Header extends Component {
                     </Menu.Item>
                 </Menu.Menu>
             </Menu>
-            <h1 style={{textAlign: "center"}}>NITC<span style={ {color:"#3283a8"} }>Vote</span></h1>
+            <h1 style={{textAlign: "center"}}>
+                <Link to="/" style={{color:"black"}}>
+                    NITC <span style={ {color:"#3283a8"} }>Vote</span>
+                </Link>
+            </h1>
             </div>
         );
     }
