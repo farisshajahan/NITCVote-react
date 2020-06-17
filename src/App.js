@@ -11,6 +11,7 @@ import { Container } from "semantic-ui-react";
 import ViewElection from "./components/ViewElection";
 import CreateNewElection from "./components/CreateNewElection";
 import RegistrationAuthority from "./components/RegistrationAuthority";
+import EnterOtp from "./components/EnterOtp";
 
 class App extends Component {
     render() {
@@ -41,6 +42,7 @@ class App extends Component {
                             component={ViewElection}
                         />
                         <Route path="/new" component={CreateNewElection} />
+                        <Route path="/enterotp" component={EnterOtp} />
                         <Route component={Error} />
                     </Switch>
                 </Container>

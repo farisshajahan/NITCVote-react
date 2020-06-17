@@ -15,10 +15,10 @@ import Cookies from 'js-cookie';
 class Register extends Component {
     state = {
 
-        email: "",
+        ethereumaddress: "",
         emailChangedOnce: false,
         
-        password: "",
+        otp: "",
         passwordChangedOnce: false,
         errorMessage: "",
         
@@ -30,10 +30,10 @@ class Register extends Component {
 
     handleChange = (e, { name, value }) => {
         switch (name) {
-            case "email":
+            case "ethereumaddress":
                 this.setState({ passwordChangedOnce: true });
                 break;
-            case "password":
+            case "otp":
                 this.setState({ passwordChangedOnce: true });
                 break;
             default:
@@ -43,8 +43,8 @@ class Register extends Component {
         this.setState({ [name]: value }, function() {
             // callback because state isn't updated immediately
             if (
-                this.state.email &&
-                this.state.password
+                this.state.ethereumaddress &&
+                this.state.otp
             ) {
                 this.setState({ inputsValid: true });
             } else {
@@ -57,43 +57,30 @@ class Register extends Component {
         
         event.preventDefault();
         const axios = require('axios');
-
-        axios.post('http://localhost:8000/users/login', {
-
-          email: this.state.email,
-          password: this.state.password
-        })
-        .then((response) => {
-            
-            var tokenVal = response.data;
-
-            
-            Cookies.set('token',tokenVal,{ expires: 0.004 })
-            axios.post('http://localhost:8000/users/me/sendOTP', {},
-            { headers: {'Authorization' : `Bearer ${tokenVal}`} })
+        var tokenVal=Cookies.get('token')
+        //var tokenVal=JSON.stringify(Cookies.get('token'))
+        axios.post(
+                "http://localhost:8000/users/me/verifyOTP", 
+                {
+                    "otpInp": this.state.otp,
+                    "ethAcctInp" : this.state.ethereumaddress
+                },
+                { headers: {"Authorization" : `Bearer ${tokenVal}`} }
+            )
             .then((response) => {
-
-                this.props.history.push('/enterotp')
-
-            }).catch((error) => {
-            var errorObj = Object.assign({}, error);
-            var errorMssg = errorObj.response.data.error;
-            console.log(error);
-            alert(errorMssg);
-           
-            });
-
-            
-            
-            
-        }).catch( (error) => {
+                alert("Ethereum Account Address registered successfully!")
+                this.props.history.push("/")
+            }, (error) => {
             var errorObj = Object.assign({}, error);
             var errorMssg = errorObj.response.data.error;
              console.log(error);
             alert(errorMssg);
            
-        });
-};
+        });       
+        
+        
+    };
+    
  
 
     
@@ -110,32 +97,35 @@ class Register extends Component {
 
                 
 
-                <Header as="h1">Login</Header>
+                <Header as="h1">Ethereum Address Registration</Header>
 
                 <Form onSubmit={this.handleSubmit} warning>
+                    <Header as="h4" attached="top">
+                        OTP Verification
+                    </Header>
                     
                     <Segment attached>
                         <Form.Input
-                            label="Email"
-                            placeholder="Email"
-                            name="email"
-                            value={this.state.email}
+                            label="Ethereum Account Public Address"
+                            placeholder="Ethereum Account Public Address"
+                            name="ethereumaddress"
+                            value={this.state.ethereumaddress}
                             onChange={this.handleChange}
                             fluid
                             error={
-                                !this.state.email&& this.state.emailChangedOnce
+                                !this.state.ethereumaddress&& this.state.emailChangedOnce
                             }
                         />
                         <Form.Input
-                            type="password"
-                            label="Password"
-                            name="password"
-                            placeholder="Enter Password"
-                            value={this.state.password}
+                            type="otp"
+                            label="OTP"
+                            name="otp"
+                            placeholder="Enter OTP"
+                            value={this.state.otp}
                             onChange={this.handleChange}
                             fluid
                             error={
-                                !this.state.password && this.state.passwordChangedOnce
+                                !this.state.otp && this.state.passwordChangedOnce
                             }
                         />
 
@@ -150,7 +140,7 @@ class Register extends Component {
                             disabled={!this.state.inputsValid}
                             
                         >
-                            Login
+                            Submit
                         </Button>
                     </Segment>
                 </Form>
