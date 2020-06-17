@@ -33,7 +33,7 @@ class App extends Component {
                         />
                         <Route path="/register" component={Register} />
                         <Route
-                            path="/registrationauthority"
+                            path="/registrationauthority/:address"
                             component={RegistrationAuthority}
                         />
                         <Route path="/about" component={About} />

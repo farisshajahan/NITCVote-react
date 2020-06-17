@@ -3,11 +3,9 @@ import { Redirect } from "react-router-dom";
 import { Dimmer, Loader, Image, Segment } from "semantic-ui-react";
 import Web3 from "web3";
 import RegistrationAuthority from "../ethereum/RegistrationAuthority.json";
-import ElectionFactory from "../ethereum/ElectionFactory.json";
 import Election from "../ethereum/Election.json";
 import ElectionMenu from "./electionComponents/ElectionMenu";
 import ElectionCards from "./electionComponents/ElectionCards";
-import NotRegisteredWarning from "./NotRegisteredWarning";
 import addresses from "../ethereum/addresses";
 import ManagerInfoMessage from "./ManagerInfoMessage.js";
 import RegAuthInfoMessage from "./RegAuthInfoMessage.js";
@@ -29,14 +27,13 @@ class Elections extends Component {
     }
 
     async loadAllRelevantData() {
-        let web3, regAuthority, electionFactory;
+        let web3, regAuthority;
         try {
             // Get Web3 and contracts
             await window.web3.currentProvider.enable();
             web3 = new Web3(window.web3.currentProvider);
             regAuthority = this.getRegistrationAuthority(web3);
-            electionFactory = this.getElectionFactory(web3);
-
+           
             window.web3.currentProvider.on(
                 "accountsChanged",
                 this.metamaskChanged
@@ -49,7 +46,7 @@ class Elections extends Component {
             );
 
             // Get Elections
-            const addresses = await electionFactory.methods
+            const addresses = await regAuthority.methods
                 .getDeployedElections()
                 .call();
 
@@ -59,6 +56,7 @@ class Elections extends Component {
             // See: https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
             await Promise.all(
                 addresses.map(async e => {
+			console.log("Check");
                     const contract = this.getElectionContract(web3, e);
                     const contractDetails = {
                         address: await contract._address,
@@ -67,7 +65,7 @@ class Elections extends Component {
                             .description()
                             .call(),
                         startTime: await contract.methods.startTime().call(),
-                        timeLimit: await contract.methods.timeLimit().call(),
+                        timeLimit: await contract.methods.endTime().call(),
                         userHasVoted: await contract.methods
                             .hasVoted(userAddresses[0])
                             .call()
@@ -79,20 +77,10 @@ class Elections extends Component {
                 })
             );
 
-            // Check if user is a regsitered voter
-            const registered = await regAuthority.methods
-                .isVoter(userAddresses[0])
-                .call();
-
-            // Check if user is election factory manager
-            const manager = await electionFactory.methods
-                .factoryManager()
-                .call();
-            const userIsManager = manager === userAddresses[0];
 
             // Check if user is registration authority
             const regAuthorityManager = await regAuthority.methods
-                .manager()
+                .registrationAuthority()
                 .call();
             const userIsRegAuthority = regAuthorityManager === userAddresses[0];
 
@@ -101,9 +89,6 @@ class Elections extends Component {
                     showLoader: false,
                     web3,
                     regAuthority,
-                    electionFactory,
-                    userIsRegisteredVoter: registered,
-                    userIsManager,
                     userIsRegAuthority
                 };
             });
@@ -130,13 +115,6 @@ class Elections extends Component {
         return contract;
     }
 
-    getElectionFactory(web3) {
-        const address = addresses.electionFactory;
-        const abi = ElectionFactory.abi;
-        const contract = new web3.eth.Contract(abi, address);
-        return contract;
-    }
-
     getElectionContract(web3, address) {
         const abi = Election.abi;
         const contract = new web3.eth.Contract(abi, address);
@@ -152,18 +130,8 @@ class Elections extends Component {
     render() {
         return (
             <React.Fragment>
-                {this.state.userIsManager && this.state.showLoader === false ? (
+                {this.state.userIsRegAuthority && this.state.showLoader === false ? (
                     <ManagerInfoMessage />
-                ) : null}
-
-                {this.state.userIsRegAuthority &&
-                this.state.showLoader === false ? (
-                    <RegAuthInfoMessage />
-                ) : null}
-
-                {this.state.userIsRegisteredVoter === false &&
-                this.state.showLoader === false ? (
-                    <NotRegisteredWarning />
                 ) : null}
 
                 <ElectionMenu
@@ -172,10 +140,6 @@ class Elections extends Component {
                 />
 
                 {this.state.redirect ? <Redirect to="/metamask" /> : null}
-
-                {this.state.wrongNetwork ? (
-                    <Redirect to="/wrongnetwork" />
-                ) : null}
 
                 {this.state.showLoader ? (
                     <Segment>
@@ -189,7 +153,6 @@ class Elections extends Component {
                 <ElectionCards
                     elections={this.state.elections}
                     activeItem={this.state.activeItem}
-                    userIsRegisteredVoter={this.state.userIsRegisteredVoter}
                 />
             </React.Fragment>
         );
@@ -197,3 +160,4 @@ class Elections extends Component {
 }
 
 export default Elections;
+

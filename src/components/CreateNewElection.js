@@ -7,7 +7,8 @@ import {
     Segment,
 } from "semantic-ui-react";
 import { DateTimeInput } from "semantic-ui-calendar-react";
-import ElectionFactory from "../ethereum/ElectionFactory.json";
+import Election from "../ethereum/Election.json";
+import regAuthority from "../ethereum/RegistrationAuthority.json"
 import convertTimeStringToDate from "../utils/convertTimeStringToDate";
 import addresses from "../ethereum/addresses";
 import Web3 from "web3";
@@ -16,6 +17,7 @@ import ProcessingModal from "./ProcessingModal";
 class CreateNewElection extends Component {
     state = {
         electionFactory: undefined,
+        election: undefined,
         userIsManager: true,
         title: "",
         titleChangedOnce: false,
@@ -38,11 +40,11 @@ class CreateNewElection extends Component {
     }
 
     async loadContract() {
-        let web3, electionFactory;
+        let web3, regAuthority; 
         try {
             await window.web3.currentProvider.enable();
             web3 = new Web3(window.web3.currentProvider);
-            electionFactory = this.getElectionFactory(web3);
+            regAuthority = this.getRegistrationAuthority(web3);
 
             window.web3.currentProvider.on(
                 "accountsChanged",
@@ -58,14 +60,14 @@ class CreateNewElection extends Component {
             const userAddresses = await web3.eth.getAccounts();
 
             if (
-                (await electionFactory.methods.factoryManager().call()) !==
+                (await regAuthority.methods.registrationAuthority().call()) !==
                 userAddresses[0]
             ) {
                 this.setState({ userIsManager: false });
             }
 
             this.setState({
-                electionFactory,
+                regAuthority,
                 userAddresses
             });
         } catch (err) {
@@ -83,12 +85,13 @@ class CreateNewElection extends Component {
         }
     }
 
-    getElectionFactory(web3) {
-        const address = addresses.electionFactory;
-        const abi = ElectionFactory.abi;
-        const contract = new web3.eth.Contract(abi, address);
-        return contract;
+    getRegistrationAuthority(web3) {
+         const address = addresses.registrationAuthority;
+         const abi = regAuthority.abi;
+         const contract = new web3.eth.Contract(abi, address);
+         return contract;
     }
+
 
     metamaskChanged = () => {
         window.location.reload();
@@ -137,7 +140,7 @@ class CreateNewElection extends Component {
         this.setState({ modalOpen: true, modalState: "processing" });
 
         try {
-            await this.state.electionFactory.methods
+            await this.state.regAuthority.methods
                 .createElection(
                     this.state.title,
                     this.state.description,
@@ -161,8 +164,8 @@ class CreateNewElection extends Component {
         return (
             <React.Fragment>
                 {this.state.redirect ? <Redirect to="/metamask" /> : null}
-
-                {this.state.wrongNetwork ? (
+		
+		{this.state.wrongNetwork ? (
                     <Redirect to="/wrongnetwork" />
                 ) : null}
 
@@ -281,3 +284,4 @@ class CreateNewElection extends Component {
 }
 
 export default CreateNewElection;
+
