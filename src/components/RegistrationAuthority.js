@@ -30,7 +30,7 @@ class RegistrationAuthority extends Component {
         ethAddress: "",
         ethAddressChangedOnce: false,
         inputsValid: false,
-        successMessage: ""
+        successMessage: "",
         userIsRegisteredVoter : false
     };
 
@@ -161,9 +161,9 @@ class RegistrationAuthority extends Component {
         this.setState({ successMessage: "The user has been registered.", modalOpen: true, modalState: "processing" });
 
         try {
-            await this.state.regAuthority.methods
+            await this.state.contract.methods
                 .registerVoter(
-                    this.state.ethAddress,
+                    this.state.ethAddress
                 )
                 .send({ from: this.state.userAddresses[0] });
 
