@@ -153,6 +153,7 @@ class Elections extends Component {
                 <ElectionCards
                     elections={this.state.elections}
                     activeItem={this.state.activeItem}
+                    userIsRegAuthority={this.state.userIsRegAuthority}
                 />
             </React.Fragment>
         );

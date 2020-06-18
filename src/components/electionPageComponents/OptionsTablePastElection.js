@@ -73,31 +73,33 @@ class OptionsTablePastElection extends Component {
             }
             var privateKey = utf8Decoder.decode(join(parts));
 
-            // Get the list of addresses that voted
-            const voters = await this.props.contract.methods
-                .getListOfAddressesThatVoted()
-                .call();
 
-            if (voters.length === 0) {
+            //Get number of voters that have voted
+            const numVote = await this.props.contract.methods.getNumberOfVoters().call();
+            console.log(numVote)
+            if (numVote === 0) {
                 throw new Error("No votes found.");
             }
 
             let tallyForEachOption = new Array(this.props.options.length).fill(0);
+
+            //get list of encrypted votes
+            const voteList = await this.props.contract.methods.getencryptedVoteList().call();
+            console.log(voteList);
+
             let vote;
-            for (let i = 0; i < voters.length; i++) {
+            for (let i = 0; i < voteList.length; i++) {
                 this.setState({
                     statusMessage:
                         "Retrieving and tallying vote " +
                         (i + 1) +
                         " of " +
-                        voters.length
+                        numVote
                 });
                 
                 var voteInvalid = false;
                 var oneSeen = false;
-                vote = JSON.parse(crypto.privateDecrypt(privateKey, Buffer.from(await this.props.contract.methods
-                         .getEncryptedVoteOfVoter(voters[i])
-                         .call(), 'hex'))).slice(0, this.props.options.length);
+                vote = JSON.parse(crypto.privateDecrypt(privateKey, Buffer.from(voteList[i],'hex'))).slice(0, this.props.options.length);
                 // Validating the vote
                 for (let j in vote) {
                     if (vote[j] !== 0 && vote[j] !== 1) {
@@ -127,7 +129,7 @@ class OptionsTablePastElection extends Component {
             );
 
 
-            if (sumOfVotes !== voters.length) {
+            if (sumOfVotes > voteList.length) {
                 throw new Error(
                     "Number of tallied votes is not the same as the number of voters."
                 );
@@ -250,8 +252,8 @@ class OptionsTablePastElection extends Component {
                 <Table celled compact unstackable>
                     <Table.Header fullWidth>
                         <Table.Row>
-                            <Table.HeaderCell>Title</Table.HeaderCell>
-                            <Table.HeaderCell>Description</Table.HeaderCell>
+                            <Table.HeaderCell>Name</Table.HeaderCell>
+                            <Table.HeaderCell>Party</Table.HeaderCell>
                             <Table.HeaderCell textAlign="center">
                                 Result
                             </Table.HeaderCell>
@@ -262,9 +264,9 @@ class OptionsTablePastElection extends Component {
                         {this.props.options !== undefined ? (
                             this.props.options.map((option, i) => (
                                 <Table.Row key={i}>
-                                    <Table.Cell>{option.title}</Table.Cell>
+                                    <Table.Cell>{option.name}</Table.Cell>
                                     <Table.Cell>
-                                        {option.description}
+                                        {option.party}
                                     </Table.Cell>
                                     <Table.Cell textAlign="center">
                                         {this.state.publishedResults.length !==

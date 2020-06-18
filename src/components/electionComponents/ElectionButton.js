@@ -7,44 +7,53 @@ class ElectionButton extends Component {
         return (
             <Button
                 as={Link}
-                to={`election/${this.props.contractAddress}`}
+                to={`election/${this.props.electionid}`}
                 floated="right"
                 color={
                     this.props.activeItem === "past"
                         ? "blue"
                         : this.props.activeItem === "current"
-                        ? this.props.userIsRegisteredVoter
-                            ? this.props.userHasVoted
-                                ? "olive"
+                            ? this.props.userIsRegisteredVoter
+                                ? this.props.userHasVoted
+                                    ? "olive"
+                                    : "green"
+                                : "blue"
+                            : this.props.userIsRegAuthority
+                                ? "blue"
                                 : "green"
-                            : "blue"
-                        : "blue"
                 }
                 animated="fade"
+                disabled={ this.props.activeItem === "current"
+                    ? this.props.userHasVoted 
+                        ? true
+                        : false
+                    :null}
             >
                 <Button.Content visible>
                     {this.props.activeItem === "past"
                         ? "View Results"
                         : this.props.activeItem === "current"
-                        ? this.props.userIsRegisteredVoter
-                            ? this.props.userHasVoted
-                                ? "Change Vote"
-                                : "Vote"
-                            : "View"
-                        : "View Options"}
+                            ? this.props.userIsRegisteredVoter
+                                ? !this.props.userHasVoted
+                                    ? "Vote"
+                                    : "Already voted"
+                                : "View"
+                            : this.props.userIsRegAuthority
+                                ? "Add Candidate"
+                                : "View Candidate"}
                 </Button.Content>
                 <Button.Content hidden>
-                    {this.props.activeItem === "past" ? (
-                        <Icon name="envelope open" />
-                    ) : this.props.activeItem === "current" ? (
-                        this.props.userIsRegisteredVoter ? (
-                            <Icon name="pencil" />
-                        ) : (
-                            <Icon name="eye" />
-                        )
-                    ) : (
-                        <Icon name="users" />
-                    )}
+                    {this.props.activeItem === "past" 
+                        ? (<Icon name="envelope open" />)
+                        : this.props.activeItem === "current" 
+                            ? (this.props.userIsRegisteredVoter 
+                                ? (!this.props.userHasVoted
+                                    ? (<Icon name="pencil" />)
+                                    : null)
+                                : (<Icon name="eye" />))
+                            : this.props.userIsRegAuthority
+                                ? (<Icon name="users" />)
+                                : (<Icon name="eye" />)}
                 </Button.Content>
             </Button>
         );

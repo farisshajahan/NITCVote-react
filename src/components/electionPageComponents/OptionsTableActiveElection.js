@@ -84,8 +84,8 @@ class OptionsTableActiveElection extends Component {
                 <Table celled compact unstackable>
                     <Table.Header fullWidth>
                         <Table.Row>
-                            <Table.HeaderCell>Title</Table.HeaderCell>
-                            <Table.HeaderCell>Description</Table.HeaderCell>
+                            <Table.HeaderCell>Name</Table.HeaderCell>
+                            <Table.HeaderCell>Party</Table.HeaderCell>
                             {this.props.userIsRegisteredVoter ? (
                                 <Table.HeaderCell textAlign="center">
                                     Vote
@@ -98,9 +98,9 @@ class OptionsTableActiveElection extends Component {
                         {this.props.options !== undefined ? (
                             this.props.options.map((option, i) => (
                                 <Table.Row key={i}>
-                                    <Table.Cell>{option.title}</Table.Cell>
+                                    <Table.Cell>{option.name}</Table.Cell>
                                     <Table.Cell>
-                                        {option.description}
+                                        {option.party}
                                     </Table.Cell>
                                     {this.props.userIsRegisteredVoter ? (
                                         <Table.Cell
@@ -129,6 +129,7 @@ class OptionsTableActiveElection extends Component {
                             </Table.Row>
                         )}
                     </Table.Body>
+
 
                     {this.props.userIsRegisteredVoter ? (
                         <Table.Footer fullWidth>

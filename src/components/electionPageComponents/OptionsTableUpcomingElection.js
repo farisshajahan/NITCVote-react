@@ -27,8 +27,8 @@ class OptionsTableUpcomingElection extends Component {
 
     async componentDidMount() {
         this.setState({
-            electionManager: await this.props.contract.methods
-                .electionManager()
+            electionManager: await this.props.regAuthority.methods
+                .registrationAuthority()
                 .call()
         });
     }
@@ -61,7 +61,7 @@ class OptionsTableUpcomingElection extends Component {
 
         try {
             await this.props.contract.methods
-                .addOption(this.state.title, this.state.description)
+                .addCandidate(this.state.title, this.state.description)
                 .send({ from: this.props.userAddresses[0] });
 
             this.setState({ modalState: "success" });
@@ -90,14 +90,14 @@ class OptionsTableUpcomingElection extends Component {
                 {this.state.electionManager === this.props.userAddresses[0] ? (
                     <Form onSubmit={this.handleSubmit} warning>
                         <Header as="h4" attached="top">
-                            Add Option
+                            Add Candidate
                         </Header>
                         <Segment attached>
                             <Form.Group widths="equal">
                                 <Form.Input
                                     width="7"
                                     fluid
-                                    placeholder="Title"
+                                    placeholder="Name"
                                     name="title"
                                     value={this.state.title}
                                     onChange={this.handleChange}
@@ -110,7 +110,7 @@ class OptionsTableUpcomingElection extends Component {
                                     width="7"
                                     fluid
                                     name="description"
-                                    placeholder="Description"
+                                    placeholder="Party"
                                     value={this.state.description}
                                     onChange={this.handleChange}
                                     error={
@@ -142,8 +142,8 @@ class OptionsTableUpcomingElection extends Component {
                 <Table celled compact unstackable>
                     <Table.Header fullWidth>
                         <Table.Row>
-                            <Table.HeaderCell>Title</Table.HeaderCell>
-                            <Table.HeaderCell>Description</Table.HeaderCell>
+                            <Table.HeaderCell>Name</Table.HeaderCell>
+                            <Table.HeaderCell>Party</Table.HeaderCell>
                         </Table.Row>
                     </Table.Header>
 
@@ -151,9 +151,9 @@ class OptionsTableUpcomingElection extends Component {
                         {this.props.options !== undefined ? (
                             this.props.options.map((option, i) => (
                                 <Table.Row key={i}>
-                                    <Table.Cell>{option.title}</Table.Cell>
+                                    <Table.Cell>{option.name}</Table.Cell>
                                     <Table.Cell>
-                                        {option.description}
+                                        {option.party}
                                     </Table.Cell>
                                 </Table.Row>
                             ))

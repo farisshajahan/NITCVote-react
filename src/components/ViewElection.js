@@ -6,7 +6,7 @@ import GeneralInformationHeader from "./electionPageComponents/GeneralInformatio
 import NotRegisteredWarning from "./NotRegisteredWarning";
 import Web3 from "web3";
 import RegistrationAuthority from "../ethereum/RegistrationAuthority.json";
-import ElectionFactory from "../ethereum/ElectionFactory.json";
+//import ElectionFactory from "../ethereum/ElectionFactory.json";
 import Election from "../ethereum/Election.json";
 import addresses from "../ethereum/addresses";
 import getContractStatus from "../utils/getContractStatus";
@@ -37,8 +37,7 @@ class ViewElection extends Component {
             await window.web3.currentProvider.enable();
             web3 = new Web3(window.web3.currentProvider);
             regAuthority = this.getRegistrationAuthority(web3);
-            //electionFactory = this.getElectionFactory(web3);
-
+            
             window.web3.currentProvider.on(
                 "accountsChanged",
                 this.metamaskChanged
@@ -71,16 +70,19 @@ class ViewElection extends Component {
             };
 
             // Check if user is a regsitered voter
-            const registered = await regAuthority.methods
-                .isVoter(userAddresses[0])
+            const regAuthorityManager = await regAuthority.methods
+                .registrationAuthority()
                 .call();
+             const userIsRegAuthority = regAuthorityManager === userAddresses[0];
 
             this.setState({
                 showLoader: false,
                 contract,
+                electionid: this.props.match.params.address,
                 contractDetails,
                 userIsRegisteredVoter: registered,
-                userAddresses
+                userAddresses,
+                regAuthority,
             });
         } catch (err) {
             if (window.web3 === undefined) {
@@ -104,13 +106,6 @@ class ViewElection extends Component {
     getRegistrationAuthority(web3) {
         const address = addresses.registrationAuthority;
         const abi = RegistrationAuthority.abi;
-        const contract = new web3.eth.Contract(abi, address);
-        return contract;
-    }
-
-    getElectionFactory(web3) {
-        const address = addresses.electionFactory;
-        const abi = ElectionFactory.abi;
         const contract = new web3.eth.Contract(abi, address);
         return contract;
     }
@@ -169,8 +164,7 @@ class ViewElection extends Component {
                             <Message.Header>
                                 You have already voted
                             </Message.Header>
-                            If you resubmit your vote, your existing vote will
-                            be overwritten.
+                                You are permitted to vote only once
                         </Message.Content>
                     </Message>
                 ) : null}
@@ -182,6 +176,8 @@ class ViewElection extends Component {
                                 options={this.state.contractDetails.options}
                                 contract={this.state.contract}
                                 userAddresses={this.state.userAddresses}
+                                regAuthority={this.state.regAuthority}
+                                electionid={this.state.electionid}                            
                             />
                         </React.Fragment>
                     ) : contractStatus === "current" ? (
@@ -197,6 +193,8 @@ class ViewElection extends Component {
                                     this.state.userIsRegisteredVoter
                                 }
                                 userAddresses={this.state.userAddresses}
+                                regAuthority={this.state.regAuthority}
+                                electionid={this.state.electionid}   
                             />
                         </React.Fragment>
                     ) : (
@@ -204,11 +202,15 @@ class ViewElection extends Component {
                             {!this.state.userIsRegisteredVoter ? (
                                 <NotRegisteredWarning />
                             ) : null}
+                            {!this.state.contractDetails.userHasVoted ? (
                             <OptionsTableUpcomingElection
                                 options={this.state.contractDetails.options}
                                 contract={this.state.contract}
                                 userAddresses={this.state.userAddresses}
+                                electionid={this.state.electionid}
+                                regAuthority={this.state.regAuthority}
                             />
+                            ) : null}
                         </React.Fragment>
                     )
                 ) : null}

@@ -3,6 +3,7 @@ import { Redirect } from "react-router-dom";
 import Web3 from "web3";
 import addresses from "../ethereum/addresses";
 import RegistrationAuthorityContract from "../ethereum/RegistrationAuthority.json";
+import Election from "../ethereum/Election.json"
 import ProcessingModal from "./ProcessingModal";
 import {
     Segment,
@@ -26,14 +27,11 @@ class RegistrationAuthority extends Component {
         modalOpen: false,
         modalState: "",
         errorMessage: "",
-        idNumber: "",
-        name: "",
-        address: "",
-        birthdate: "",
         ethAddress: "",
         ethAddressChangedOnce: false,
         inputsValid: false,
         successMessage: ""
+        userIsRegisteredVoter : false
     };
 
     async componentDidMount() {
@@ -63,12 +61,16 @@ class RegistrationAuthority extends Component {
 
             // Check if user is registration authority
             const regAuthorityManager = await regAuthority.methods
-                .manager()
+                .registrationAuthority()
                 .call();
             const userIsRegAuthority = regAuthorityManager === userAddresses[0];
 
+            const contract = this.getElectionContract(web3, this.props.match.params.address);
+            const userIsRegisteredVoter = contract.methods.isRegisteredVoter(userAddresses[0]).call();
+
+
             // Get a list of all registered voters
-            const voters = await regAuthority.methods.getListOfVoters().call();
+            const voters = await contract.methods.getListOfVoters().call();
             let voterDetails = [];
 
             // forEach doesn't await all instructions
@@ -76,7 +78,7 @@ class RegistrationAuthority extends Component {
             await Promise.all(
                 voters.map(async e => {
                     voterDetails.push(
-                        await regAuthority.methods.getVoterDetails(e).call()
+                        await contract.methods.getVoterDetails(e).call()
                     );
                 })
             );
@@ -88,7 +90,9 @@ class RegistrationAuthority extends Component {
                     regAuthority,
                     userIsRegAuthority,
                     voters: voterDetails,
-                    userAddresses
+                    userAddresses,
+                    userIsRegisteredVoter,
+                    contract
                 };
             });
         } catch (err) {
@@ -111,6 +115,13 @@ class RegistrationAuthority extends Component {
         const abi = RegistrationAuthorityContract.abi;
         const contract = new web3.eth.Contract(abi, address);
         return contract;
+    }
+
+    getElectionContract(web3, address) {
+        const abi = Election.abi;
+        const contract = new web3.eth.Contract(abi, address);
+        return contract;
+
     }
 
     metamaskChanged = () => {
@@ -136,7 +147,7 @@ class RegistrationAuthority extends Component {
 
         try {
             const address = this.state.voters[i].ethAddress;
-            await this.state.regAuthority.methods
+            await this.state.contract.methods
                 .unregisterVoter(address)
                 .send({ from: this.state.userAddresses[0] });
 
@@ -151,12 +162,8 @@ class RegistrationAuthority extends Component {
 
         try {
             await this.state.regAuthority.methods
-                .registerOrUpdateVoter(
+                .registerVoter(
                     this.state.ethAddress,
-                    this.state.name,
-                    this.state.address,
-                    this.state.birthdate,
-                    this.state.idNumber
                 )
                 .send({ from: this.state.userAddresses[0] });
 
@@ -206,10 +213,7 @@ class RegistrationAuthority extends Component {
                     <Table celled compact unstackable>
                         <Table.Header fullWidth>
                             <Table.Row>
-                                <Table.HeaderCell>ID Number</Table.HeaderCell>
-                                <Table.HeaderCell>Name</Table.HeaderCell>
-                                <Table.HeaderCell>Address</Table.HeaderCell>
-                                <Table.HeaderCell>Birthdate</Table.HeaderCell>
+                                <Table.Row>
                                 <Table.HeaderCell>
                                     Ethereum Address
                                 </Table.HeaderCell>
@@ -217,46 +221,11 @@ class RegistrationAuthority extends Component {
                                     Control
                                 </Table.HeaderCell>
                             </Table.Row>
+                            </Table.Row>
                         </Table.Header>
 
                         <Table.Body>
                             <Table.Row>
-                                <Table.Cell>
-                                    <Input
-                                        fluid
-                                        placeholder="ID Number"
-                                        name="idNumber"
-                                        value={this.state.idNumber}
-                                        onChange={this.handleChange}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Input
-                                        fluid
-                                        placeholder="Name"
-                                        name="name"
-                                        value={this.state.name}
-                                        onChange={this.handleChange}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Input
-                                        fluid
-                                        placeholder="Address"
-                                        name="address"
-                                        value={this.state.address}
-                                        onChange={this.handleChange}
-                                    />
-                                </Table.Cell>
-                                <Table.Cell>
-                                    <Input
-                                        fluid
-                                        placeholder="Birthdate"
-                                        name="birthdate"
-                                        value={this.state.birthdate}
-                                        onChange={this.handleChange}
-                                    />
-                                </Table.Cell>
                                 <Table.Cell>
                                     <Input
                                         fluid
@@ -289,17 +258,7 @@ class RegistrationAuthority extends Component {
                             </Table.Row>
                             {this.state.voters.length !== 0 ? (
                                 this.state.voters.map((voter, i) => (
-                                    <Table.Row key={i}>
-                                        <Table.Cell>
-                                            {voter.personId}
-                                        </Table.Cell>
-                                        <Table.Cell>{voter.name}</Table.Cell>
-                                        <Table.Cell>
-                                            {voter.streetAddress}
-                                        </Table.Cell>
-                                        <Table.Cell>
-                                            {voter.birthdate}
-                                        </Table.Cell>
+                                    <Table.Row key={i}>             
                                         <Table.Cell>
                                             {voter.ethAddress}
                                         </Table.Cell>

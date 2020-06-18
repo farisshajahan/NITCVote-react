@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Card, Icon } from "semantic-ui-react";
 import ElectionButton from "./ElectionButton";
 import formatTimestamp from "../../utils/formatTimestamp";
+import RegAuthInfoMessage from "../RegAuthInfoMessage"
 
 class ElectionCard extends Component {
     render() {
@@ -12,7 +13,8 @@ class ElectionCard extends Component {
                         activeItem={this.props.activeItem}
                         userHasVoted={this.props.userHasVoted}
                         userIsRegisteredVoter={this.props.userIsRegisteredVoter}
-                        contractAddress={this.props.address}
+                        electionid={this.props.electionid}
+                        userIsRegAuthority={this.props.userIsRegAuthority}
                     />
                     <Card.Header>{this.props.title}</Card.Header>
                     <Card.Meta>{this.props.description}</Card.Meta>
@@ -47,7 +49,16 @@ class ElectionCard extends Component {
                             <strong>
                                 {formatTimestamp(this.props.timeLimit)}
                             </strong>
+
+                            { this.props.userIsRegAuthority ? (
+                            <RegAuthInfoMessage
+                                  electionid={this.props.electionid}
+                            /> ) : null}
+
                         </React.Fragment>
+                       
+                        
+                        
                     )}
                 </Card.Content>
             </Card>

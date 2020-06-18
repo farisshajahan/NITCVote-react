@@ -47,9 +47,8 @@ class ElectionCards extends Component {
                             startTime={election.startTime}
                             timeLimit={election.timeLimit}
                             userHasVoted={election.userHasVoted}
-                            userIsRegisteredVoter={
-                                this.props.userIsRegisteredVoter
-                            }
+                            userIsRegisteredVoter={this.props.userIsRegisteredVoter}
+                            userIsRegAuthority={this.props.userIsRegAuthority}
                         />
                     ))}
                 {this.props.elections
