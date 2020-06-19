@@ -27,7 +27,7 @@ class Header extends Component {
             </Menu>
             <h1 style={{textAlign: "center"}}>
                 <Link to="/" style={{color:"black"}}>
-                    NITC <span style={ {color:"#3283a8"} }>Vote</span>
+                    NITC<span style={ {color:"#3283a8"} }>Vote</span>
                 </Link>
             </h1>
             </div>
