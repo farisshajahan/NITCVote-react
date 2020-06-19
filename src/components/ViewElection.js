@@ -80,7 +80,6 @@ class ViewElection extends Component {
                 contract,
                 electionid: this.props.match.params.address,
                 contractDetails,
-                userIsRegisteredVoter: registered,
                 userAddresses,
                 regAuthority,
             });
