@@ -4,6 +4,7 @@
   "private": true,
   "homepage": "./",
   "dependencies": {
+    "axios": "^0.19.2",
     "crypto": "^1.0.1",
     "file-saver": "^2.0.2",
     "js-cookie": "^2.2.1",
