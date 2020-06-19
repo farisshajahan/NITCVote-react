@@ -69,8 +69,9 @@ class Register extends Component {
 
             
             Cookies.set('token',tokenVal,{ expires: 0.004 })
-            axios.post('http://localhost:8000/users/me/sendOTP', {},
-            { headers: {'Authorization' : `Bearer ${tokenVal}`} })
+            axios.get(
+                "http://localhost:8000/users/me/sendOTP", 
+                { headers: {"Authorization" : `Bearer ${tokenVal}`} })
             .then((response) => {
 
                 this.props.history.push('/')
