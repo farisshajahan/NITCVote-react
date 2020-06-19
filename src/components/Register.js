@@ -73,7 +73,7 @@ class Register extends Component {
             { headers: {'Authorization' : `Bearer ${tokenVal}`} })
             .then((response) => {
 
-                this.props.history.push('/enterotp')
+                this.props.history.push('/')
 
             }).catch((error) => {
             var errorObj = Object.assign({}, error);

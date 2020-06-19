@@ -3,6 +3,8 @@ import { Card, Icon } from "semantic-ui-react";
 import ElectionButton from "./ElectionButton";
 import formatTimestamp from "../../utils/formatTimestamp";
 import RegAuthInfoMessage from "../RegAuthInfoMessage"
+import EnterOtpMessage from "../EnterOtpMessage"
+
 
 class ElectionCard extends Component {
     render() {
@@ -53,7 +55,7 @@ class ElectionCard extends Component {
                             { this.props.userIsRegAuthority ? (
                             <RegAuthInfoMessage
                                   electionid={this.props.address}
-                            /> ) : null}
+                            /> ) : <EnterOtpMessage electionid={this.props.address}/>}
 
                         </React.Fragment>
                        

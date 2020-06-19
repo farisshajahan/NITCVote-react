@@ -42,7 +42,7 @@ class App extends Component {
                             component={ViewElection}
                         />
                         <Route path="/new" component={CreateNewElection} />
-                        <Route path="/enterotp" component={EnterOtp} />
+                        <Route path="/enterotp/:address" component={EnterOtp} />
                         <Route component={Error} />
                     </Switch>
                 </Container>

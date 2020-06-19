@@ -1,3 +1,3 @@
 module.exports = {
-    registrationAuthority: "0x9C845E4885dc9328DE2C28b25f783f1ca313672F",
+    registrationAuthority: "0x750D6708369516dcC30F453d12010F425F2F8fCf",
 };

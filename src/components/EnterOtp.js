@@ -12,8 +12,9 @@ import Cookies from 'js-cookie';
 
     
 
-class Register extends Component {
+class EnterOtp extends Component {
     state = {
+        
 
         ethereumaddress: "",
         emailChangedOnce: false,
@@ -149,4 +150,4 @@ class Register extends Component {
     }
 }
 
-export default Register;
+export default EnterOtp;

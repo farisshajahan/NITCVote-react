@@ -15,7 +15,7 @@ class Header extends Component {
                         Install Metamask
                     </Menu.Item>
                     <Menu.Item as={Link} to="/register">
-                        Register to vote
+                        Login to vote
                     </Menu.Item>
                     <Menu.Item
                         href="//github.com/farisshajahan/NITCVote"
