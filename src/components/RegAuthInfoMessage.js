@@ -2,10 +2,10 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Message, Button } from "semantic-ui-react";
 
-export default function RegAuthInfoMessage() {
+export default function RegAuthInfoMessage(props) {
     return (
         <Message info>
-            <Button basic floated="right" as={Link} to="{'/registrationauthority/${props.electionid}'}">
+            <Button basic floated="right" as={Link} to={`registrationauthority/${props.electionid}`}>
                 Registration
             </Button>
             <Message.Header>Register Voters</Message.Header>

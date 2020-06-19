@@ -13,7 +13,7 @@ class ElectionCard extends Component {
                         activeItem={this.props.activeItem}
                         userHasVoted={this.props.userHasVoted}
                         userIsRegisteredVoter={this.props.userIsRegisteredVoter}
-                        electionid={this.props.electionid}
+                        electionid={this.props.address}
                         userIsRegAuthority={this.props.userIsRegAuthority}
                     />
                     <Card.Header>{this.props.title}</Card.Header>
@@ -52,7 +52,7 @@ class ElectionCard extends Component {
 
                             { this.props.userIsRegAuthority ? (
                             <RegAuthInfoMessage
-                                  electionid={this.props.electionid}
+                                  electionid={this.props.address}
                             /> ) : null}
 
                         </React.Fragment>

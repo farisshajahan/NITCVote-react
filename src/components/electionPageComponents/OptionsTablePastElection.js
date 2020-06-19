@@ -214,7 +214,7 @@ class OptionsTablePastElection extends Component {
                                 </React.Fragment>
                                 <Form.TextArea
                                 name={`privatekey-${i+1}`}
-                                partId={i}
+                                key={i}
                                 value={part.share}
                                 onChange={this.handleKeyPartChange(i)}
                                 style={{ minHeight: 100, marginBottom: "20px"}}

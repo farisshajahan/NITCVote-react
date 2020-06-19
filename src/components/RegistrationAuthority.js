@@ -56,18 +56,14 @@ class RegistrationAuthority extends Component {
                 "networkChanged",
                 this.metamaskChanged
             );
-
             const userAddresses = await web3.eth.getAccounts();
-
             // Check if user is registration authority
             const regAuthorityManager = await regAuthority.methods
                 .registrationAuthority()
                 .call();
             const userIsRegAuthority = regAuthorityManager === userAddresses[0];
-
             const contract = this.getElectionContract(web3, this.props.match.params.address);
             const userIsRegisteredVoter = contract.methods.isRegisteredVoter(userAddresses[0]).call();
-
 
             // Get a list of all registered voters
             const voters = await contract.methods.getListOfVoters().call();
@@ -82,7 +78,6 @@ class RegistrationAuthority extends Component {
                     );
                 })
             );
-
             this.setState(function(prevState, props) {
                 return {
                     showLoader: false,
@@ -213,14 +208,12 @@ class RegistrationAuthority extends Component {
                     <Table celled compact unstackable>
                         <Table.Header fullWidth>
                             <Table.Row>
-                                <Table.Row>
-                                <Table.HeaderCell>
+                                <Table.HeaderCell textAlign="center">
                                     Ethereum Address
                                 </Table.HeaderCell>
                                 <Table.HeaderCell textAlign="center">
                                     Control
                                 </Table.HeaderCell>
-                            </Table.Row>
                             </Table.Row>
                         </Table.Header>
 
@@ -282,18 +275,7 @@ class RegistrationAuthority extends Component {
                                     </Table.Row>
                                 ))
                             ) : (
-                                <Table.Row>
-                                    <Table.Cell colSpan="5" textAlign="center">
-                                        <Segment>
-                                            <Dimmer active inverted>
-                                                <Loader inverted>
-                                                    Loading
-                                                </Loader>
-                                            </Dimmer>
-                                            <Image src="https://react.semantic-ui.com/images/wireframe/short-paragraph.png" />
-                                        </Segment>
-                                    </Table.Cell>
-                                </Table.Row>
+                                null
                             )}
                         </Table.Body>
                     </Table>

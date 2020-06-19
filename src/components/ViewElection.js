@@ -55,17 +55,17 @@ class ViewElection extends Component {
             );
 
             const userAddresses = await web3.eth.getAccounts();
-
+            console.log(contract);
             const contractDetails = {
                 address: await contract._address,
                 title: await contract.methods.title().call(),
                 description: await contract.methods.description().call(),
                 startTime: await contract.methods.startTime().call(),
-                timeLimit: await contract.methods.timeLimit().call(),
+                timeLimit: await contract.methods.endTime().call(),
                 userHasVoted: await contract.methods
                     .hasVoted(userAddresses[0])
                     .call(),
-                options: await contract.methods.getOptions().call(),
+                options: await contract.methods.getBallot().call(),
                 publicKey: await contract.methods.encryptionKey().call()
             };
 
