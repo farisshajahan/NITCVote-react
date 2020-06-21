@@ -21,7 +21,8 @@ class Elections extends Component {
         userIsRegAuthority: false,
         wrongNetwork: false,
         activeItem: "current",
-        elections: []
+        elections: [],
+        submitted: []
     };
 
     async componentDidMount() {
@@ -54,7 +55,10 @@ class Elections extends Component {
             if(Cookies.get('token')){
                 const eligible = await axios.get("http://localhost:8000/users/me/eligible",
                                 {headers: {"Authorization": "Bearer "+Cookies.get('token')}});
-                addresses = addresses.filter(election => eligible.data.includes(election));
+                addresses = eligible.data.filter(election => addresses.includes(election.id))
+                                         .map(election => election.id);
+                this.setState({submitted : eligible.data.filter(election => election.submitted == true)
+                                                        .map(election => election.id)});
             }
 
             const userAddresses = await web3.eth.getAccounts();
@@ -158,6 +162,7 @@ class Elections extends Component {
 
                 <ElectionCards
                     elections={this.state.elections}
+                    submitted={this.state.submitted}
                     activeItem={this.state.activeItem}
                     userIsRegAuthority={this.state.userIsRegAuthority}
                 />

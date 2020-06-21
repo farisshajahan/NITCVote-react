@@ -3,10 +3,8 @@ import { Redirect } from "react-router-dom";
 import { Segment, Message, Icon, Image } from "semantic-ui-react";
 import OptionsTableActiveElection from "./electionPageComponents/OptionsTableActiveElection";
 import GeneralInformationHeader from "./electionPageComponents/GeneralInformationHeader";
-import NotRegisteredWarning from "./NotRegisteredWarning";
 import Web3 from "web3";
 import RegistrationAuthority from "../ethereum/RegistrationAuthority.json";
-//import ElectionFactory from "../ethereum/ElectionFactory.json";
 import Election from "../ethereum/Election.json";
 import addresses from "../ethereum/addresses";
 import getContractStatus from "../utils/getContractStatus";
@@ -181,9 +179,6 @@ class ViewElection extends Component {
                         </React.Fragment>
                     ) : contractStatus === "current" ? (
                         <React.Fragment>
-                            {!this.state.userIsRegisteredVoter ? (
-                                <NotRegisteredWarning />
-                            ) : null}
                             <OptionsTableActiveElection
                                 options={this.state.contractDetails.options}
                                 publicKey={this.state.contractDetails.publicKey}
@@ -198,9 +193,6 @@ class ViewElection extends Component {
                         </React.Fragment>
                     ) : (
                         <React.Fragment>
-                            {!this.state.userIsRegisteredVoter ? (
-                                <NotRegisteredWarning />
-                            ) : null}
                             {!this.state.contractDetails.userHasVoted ? (
                             <OptionsTableUpcomingElection
                                 options={this.state.contractDetails.options}

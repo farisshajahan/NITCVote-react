@@ -39,8 +39,8 @@ class ElectionButton extends Component {
                                     : "Already voted"
                                 : "View"
                             : this.props.userIsRegAuthority
-                                ? "Add Candidate"
-                                : "View Candidate"}
+                                ? "Add Candidates"
+                                : "View Candidates"}
                 </Button.Content>
                 <Button.Content hidden>
                     {this.props.activeItem === "past" 

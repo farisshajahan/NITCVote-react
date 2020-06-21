@@ -11,7 +11,7 @@ class Header extends Component {
                     Home
                 </Menu.Item>
                 <Menu.Menu position="right">
-                    <Menu.Item as={Link} to="/metamask">
+                    <Menu.Item href="//metamask.io" target="_blank">
                         Install Metamask
                     </Menu.Item>
                     { this.props.login ?
