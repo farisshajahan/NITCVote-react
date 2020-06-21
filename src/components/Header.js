@@ -14,9 +14,11 @@ class Header extends Component {
                     <Menu.Item as={Link} to="/metamask">
                         Install Metamask
                     </Menu.Item>
-                    <Menu.Item as={Link} to="/register">
+                    { this.props.login ?
+                    (<Menu.Item> {this.props.login} </Menu.Item>) :
+                    (<Menu.Item as={Link} to="/register">
                         Login to vote
-                    </Menu.Item>
+                    </Menu.Item>)}
                     <Menu.Item
                         href="//github.com/farisshajahan/NITCVote"
                         target="_blank"

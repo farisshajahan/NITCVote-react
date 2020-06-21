@@ -56,7 +56,6 @@ class Elections extends Component {
             // See: https://stackoverflow.com/questions/37576685/using-async-await-with-a-foreach-loop
             await Promise.all(
                 addresses.map(async e => {
-			console.log("Check");
                     const contract = this.getElectionContract(web3, e);
                     const contractDetails = {
                         address: await contract._address,

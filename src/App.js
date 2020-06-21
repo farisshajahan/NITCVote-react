@@ -12,13 +12,14 @@ import ViewElection from "./components/ViewElection";
 import CreateNewElection from "./components/CreateNewElection";
 import RegistrationAuthority from "./components/RegistrationAuthority";
 import EnterOtp from "./components/EnterOtp";
+import Cookies from "js-cookie";
 
 class App extends Component {
     render() {
         return (
             <HashRouter>
                 <Container style={{ margin: "1em" }}>
-                    <Header />
+                { (<Header login={Cookies.get('user')} />) }
                     <link
                         rel="stylesheet"
                         href="//cdn.jsdelivr.net/npm/semantic-ui@2.4.2/dist/semantic.min.css"

@@ -64,35 +64,15 @@ class Register extends Component {
           password: this.state.password
         })
         .then((response) => {
-            
-            var tokenVal = response.data;
-
-            
-            Cookies.set('token',tokenVal,{ expires: 0.004 })
-            axios.get(
-                "http://localhost:8000/users/me/sendOTP", 
-                { headers: {"Authorization" : `Bearer ${tokenVal}`} })
-            .then((response) => {
-
-                this.props.history.push('/')
-
-            }).catch((error) => {
-            var errorObj = Object.assign({}, error);
-            var errorMssg = errorObj.response.data.error;
-            console.log(error);
-            alert(errorMssg);
-           
-            });
-
-            
-            
-            
+            var UserInfo = response.data;
+            Cookies.set('token', UserInfo.token, { expires: 1 })
+            Cookies.set('user', UserInfo.user, {expires: 1})
+            window.location.replace('/')
         }).catch( (error) => {
             var errorObj = Object.assign({}, error);
             var errorMssg = errorObj.response.data.error;
              console.log(error);
-            alert(errorMssg);
-           
+            alert(errorMssg);   
         });
 };
  
