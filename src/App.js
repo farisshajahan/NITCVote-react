@@ -33,7 +33,7 @@ class App extends Component {
                             path="/wrongnetwork"
                             component={MetamaskWrongNetwork}
                         />
-                        <Route path="/register" component={Register} />
+                        <Route path="/login" component={Register} />
                         <Route
                             path="/registrationauthority/:address"
                             component={RegistrationAuthority}
@@ -44,7 +44,7 @@ class App extends Component {
                             component={ViewElection}
                         />
                         <Route path="/new" component={CreateNewElection} />
-                        <Route path="/enterotp/:address" component={EnterOtp} />
+                        <Route path="/verify/:address" component={EnterOtp} />
                         <Route path="/logout" render={Logout} />
                         <Route component={Error} />
                     </Switch>

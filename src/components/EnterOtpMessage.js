@@ -5,7 +5,7 @@ import { Message, Button } from "semantic-ui-react";
 export default function EnterOtpMessage(props) {
     return (
         <Message info>
-            <Button basic floated="right" as={Link} to={`EnterOTP/${props.electionid}`}>
+            <Button basic floated="right" as={Link} to={`verify/${props.electionid}`}>
                 Registration
             </Button>
             <Message.Header>Register Ethereum Address</Message.Header>

@@ -31,7 +31,7 @@ class Register extends Component {
     handleChange = (e, { name, value }) => {
         switch (name) {
             case "email":
-                this.setState({ passwordChangedOnce: true });
+                this.setState({ emailChangedOnce: true });
                 break;
             case "password":
                 this.setState({ passwordChangedOnce: true });
@@ -66,7 +66,7 @@ class Register extends Component {
         .then((response) => {
             var UserInfo = response.data;
             Cookies.set('token', UserInfo.token, { expires: 1 })
-            Cookies.set('user', UserInfo.user, {expires: 1})
+            Cookies.set('user', UserInfo.user, { expires: 1 })
             window.location.replace('/')
         }).catch( (error) => {
             var errorObj = Object.assign({}, error);
@@ -87,9 +87,9 @@ class Register extends Component {
                     <Redirect to="/wrongnetwork" />
                 ) : null}
 
-               
-
-                
+                {Cookies.get('token') ? (
+                    <Redirect to="/" />
+                ) : null}
 
                 <Header as="h1">Login</Header>
 

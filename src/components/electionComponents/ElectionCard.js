@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { Card, Icon } from "semantic-ui-react";
 import ElectionButton from "./ElectionButton";
 import formatTimestamp from "../../utils/formatTimestamp";
-import RegAuthInfoMessage from "../RegAuthInfoMessage"
-import EnterOtpMessage from "../EnterOtpMessage"
-
+import RegAuthInfoMessage from "../RegAuthInfoMessage";
+import EnterOtpMessage from "../EnterOtpMessage";
+import Cookies from "js-cookie";
 
 class ElectionCard extends Component {
     render() {
@@ -55,7 +55,10 @@ class ElectionCard extends Component {
                             { this.props.userIsRegAuthority ? (
                             <RegAuthInfoMessage
                                   electionid={this.props.address}
-                            /> ) : <EnterOtpMessage electionid={this.props.address}/>}
+                            /> ) : Cookies.get('token') ?
+                                (<EnterOtpMessage electionid={this.props.address}/>)
+                                : null
+                            }
 
                         </React.Fragment>
                        

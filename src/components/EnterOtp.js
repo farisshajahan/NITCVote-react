@@ -6,24 +6,27 @@ import {
     Button,
     Segment,
 } from "semantic-ui-react";
-import Cookies from 'js-cookie';
-
-
-
-    
+import Cookies from "js-cookie";
+import axios from "axios";
 
 class EnterOtp extends Component {
     state = {
-        
-
         ethereumaddress: "",
         emailChangedOnce: false,
-        
         otp: "",
         passwordChangedOnce: false,
         errorMessage: "",
-        
+        otpSent: false
     };
+
+    async componentDidMount() {
+        if (!Cookies.get('token')) { window.location.replace('/'); }
+        axios.get("http://localhost:8000/users/me/sendOTP",
+                        {headers: {"Authorization": "Bearer " + Cookies.get('token')}}
+        ).then((response) => {
+            this.setState({ otpSent: true });
+        });
+    }
 
     metamaskChanged = () => {
         window.location.reload();
@@ -32,7 +35,7 @@ class EnterOtp extends Component {
     handleChange = (e, { name, value }) => {
         switch (name) {
             case "ethereumaddress":
-                this.setState({ passwordChangedOnce: true });
+                this.setState({ addressChangedOnce: true });
                 break;
             case "otp":
                 this.setState({ passwordChangedOnce: true });
@@ -64,7 +67,8 @@ class EnterOtp extends Component {
                 "http://localhost:8000/users/me/verifyOTP", 
                 {
                     "otpInp": this.state.otp,
-                    "ethAcctInp" : this.state.ethereumaddress
+                    "ethAcctInp" : this.state.ethereumaddress,
+                    "electionId": this.props.match.params.address
                 },
                 { headers: {"Authorization" : `Bearer ${tokenVal}`} }
             )
@@ -94,10 +98,6 @@ class EnterOtp extends Component {
                     <Redirect to="/wrongnetwork" />
                 ) : null}
 
-               
-
-                
-
                 <Header as="h1">Ethereum Address Registration</Header>
 
                 <Form onSubmit={this.handleSubmit} warning>
@@ -114,7 +114,7 @@ class EnterOtp extends Component {
                             onChange={this.handleChange}
                             fluid
                             error={
-                                !this.state.ethereumaddress&& this.state.emailChangedOnce
+                                !this.state.ethereumaddress&& this.state.addressChangedOnce
                             }
                         />
                         <Form.Input
@@ -125,6 +125,7 @@ class EnterOtp extends Component {
                             value={this.state.otp}
                             onChange={this.handleChange}
                             fluid
+                            disabled={!this.state.otpSent}
                             error={
                                 !this.state.otp && this.state.passwordChangedOnce
                             }

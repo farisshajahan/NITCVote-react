@@ -22,7 +22,7 @@ class Header extends Component {
                             </Dropdown.Item>
                         </Dropdown.Menu>
                      </Dropdown>) :
-                    (<Menu.Item as={Link} to="/register">
+                    (<Menu.Item as={Link} to="/login">
                         Login to vote
                     </Menu.Item>)}
                     <Menu.Item
