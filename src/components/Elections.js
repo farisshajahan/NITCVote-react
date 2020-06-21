@@ -9,6 +9,8 @@ import ElectionCards from "./electionComponents/ElectionCards";
 import addresses from "../ethereum/addresses";
 import ManagerInfoMessage from "./ManagerInfoMessage.js";
 import RegAuthInfoMessage from "./RegAuthInfoMessage.js";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 class Elections extends Component {
     state = {
@@ -46,9 +48,14 @@ class Elections extends Component {
             );
 
             // Get Elections
-            const addresses = await regAuthority.methods
+            var addresses = await regAuthority.methods
                 .getDeployedElections()
                 .call();
+            if(Cookies.get('token')){
+                const eligible = await axios.get("http://localhost:8000/users/me/eligible",
+                                {headers: {"Authorization": "Bearer "+Cookies.get('token')}});
+                addresses = addresses.filter(election => eligible.data.includes(election));
+            }
 
             const userAddresses = await web3.eth.getAccounts();
 
