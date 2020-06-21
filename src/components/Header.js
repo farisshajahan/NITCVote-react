@@ -15,7 +15,13 @@ class Header extends Component {
                         Install Metamask
                     </Menu.Item>
                     { this.props.login ?
-                    (<Menu.Item> {this.props.login} </Menu.Item>) :
+                    (<Dropdown item text={this.props.login}>
+                        <Dropdown.Menu>
+                            <Dropdown.Item as={Link} to="/logout">
+                                Logout
+                            </Dropdown.Item>
+                        </Dropdown.Menu>
+                     </Dropdown>) :
                     (<Menu.Item as={Link} to="/register">
                         Login to vote
                     </Menu.Item>)}

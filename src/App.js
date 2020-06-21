@@ -11,6 +11,7 @@ import { Container } from "semantic-ui-react";
 import ViewElection from "./components/ViewElection";
 import CreateNewElection from "./components/CreateNewElection";
 import RegistrationAuthority from "./components/RegistrationAuthority";
+import Logout from "./components/Logout";
 import EnterOtp from "./components/EnterOtp";
 import Cookies from "js-cookie";
 
@@ -44,6 +45,7 @@ class App extends Component {
                         />
                         <Route path="/new" component={CreateNewElection} />
                         <Route path="/enterotp/:address" component={EnterOtp} />
+                        <Route path="/logout" render={Logout} />
                         <Route component={Error} />
                     </Switch>
                 </Container>
