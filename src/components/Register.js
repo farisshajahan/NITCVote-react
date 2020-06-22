@@ -59,7 +59,7 @@ class Register extends Component {
     handleSubmit = async event => {
         
         event.preventDefault();
-        this.setState({ modalOpen: true, modalState: "processing" });
+        //this.setState({ modalOpen: true, modalState: "processing" });
         
         try
         {
@@ -82,11 +82,11 @@ class Register extends Component {
                 var errorMssg = errorObj.response.data.error;
                  console.log(error);
                 //alert(errorMssg);  
-                this.setState({ modalState: "error", errorMessage: errorMssg, errorMessageDetailed: "We encountered an error. Please try again." });  
+                this.setState({ modalOpen: true, modalState: "error", errorMessage: errorMssg, errorMessageDetailed: "We encountered an error. Please try again." });  
             });
         }
         catch (err) {
-            this.setState({ modalState: "error", errorMessage: "We encountered an error. Please try again." ,errorMessageDetailed: err.message}); 
+            this.setState({ modalOpen: true, modalState: "error", errorMessage: "We encountered an error. Please try again." ,errorMessageDetailed: err.message}); 
     
         }   
 };
