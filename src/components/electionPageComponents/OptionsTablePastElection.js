@@ -73,19 +73,10 @@ class OptionsTablePastElection extends Component {
             }
             var privateKey = utf8Decoder.decode(join(parts));
 
-
-            //Get number of voters that have voted
-            const numVote = await this.props.contract.methods.getNumberOfVoters().call();
-            console.log(numVote)
-            if (numVote === 0) {
-                throw new Error("No votes found.");
-            }
-
             let tallyForEachOption = new Array(this.props.options.length).fill(0);
 
             //get list of encrypted votes
             const voteList = await this.props.contract.methods.getencryptedVoteList().call();
-            console.log(voteList);
 
             let vote;
             for (let i = 0; i < voteList.length; i++) {
@@ -94,7 +85,7 @@ class OptionsTablePastElection extends Component {
                         "Retrieving and tallying vote " +
                         (i + 1) +
                         " of " +
-                        numVote
+                        voteList.length
                 });
                 
                 var voteInvalid = false;

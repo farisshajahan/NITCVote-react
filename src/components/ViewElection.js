@@ -53,7 +53,6 @@ class ViewElection extends Component {
             );
 
             const userAddresses = await web3.eth.getAccounts();
-            console.log(contract);
             const contractDetails = {
                 address: await contract._address,
                 title: await contract.methods.title().call(),

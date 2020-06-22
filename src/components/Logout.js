@@ -4,7 +4,7 @@ import axios from "axios";
 export default function Logout() {
     if(Cookies.get('token')){
         console.log("hello");
-        axios.get("http://localhost:8000/users/me/logout",
+        axios.get("/api/users/me/logout",
             {headers: {'Authorization': 'Bearer ' + Cookies.get('token')}}
         ).then((response) => {
             Cookies.remove('user');

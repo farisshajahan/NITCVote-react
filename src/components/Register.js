@@ -58,7 +58,7 @@ class Register extends Component {
         event.preventDefault();
         const axios = require('axios');
 
-        axios.post('http://localhost:8000/users/login', {
+        axios.post('/api/users/login', {
 
           email: this.state.email,
           password: this.state.password

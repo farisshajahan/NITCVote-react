@@ -102,7 +102,6 @@ class OptionsTableActiveElection extends Component {
                                     <Table.Cell>
                                         {option.party}
                                     </Table.Cell>
-                                    {this.props.userIsRegisteredVoter ? (
                                         <Table.Cell
                                             collapsing
                                             textAlign="center"
@@ -113,7 +112,6 @@ class OptionsTableActiveElection extends Component {
                                                 onChange={this.toggle}
                                             />
                                         </Table.Cell>
-                                    ) : null}
                                 </Table.Row>
                             ))
                         ) : (
@@ -131,7 +129,6 @@ class OptionsTableActiveElection extends Component {
                     </Table.Body>
 
 
-                    {this.props.userIsRegisteredVoter ? (
                         <Table.Footer fullWidth>
                             <Table.Row>
                                 <Table.HeaderCell colSpan="2">
@@ -168,8 +165,7 @@ class OptionsTableActiveElection extends Component {
                                                     0 &&
                                                 this.state.selected.length <=
                                                     this.state.voteLimit
-                                            ) ||
-                                            !this.props.userIsRegisteredVoter
+                                            )
                                         }
                                     >
                                         <Button.Content visible>
@@ -182,7 +178,6 @@ class OptionsTableActiveElection extends Component {
                                 </Table.HeaderCell>
                             </Table.Row>
                         </Table.Footer>
-                    ) : null}
                 </Table>
             </React.Fragment>
         );

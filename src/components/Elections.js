@@ -53,7 +53,7 @@ class Elections extends Component {
                 .getDeployedElections()
                 .call();
             if(Cookies.get('token')){
-                const eligible = await axios.get("http://localhost:8000/users/me/eligible",
+                const eligible = await axios.get("/api/users/me/eligible",
                                 {headers: {"Authorization": "Bearer " + Cookies.get('token')}});
                 addresses = eligible.data.filter(election => addresses.includes(election.id))
                                          .map(election => election.id);

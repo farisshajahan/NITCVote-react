@@ -166,12 +166,12 @@ class CreateNewElection extends Component {
     };
 
     generateKeys = () => {
-        axios.post('http://localhost:8000/shamirshare', {
+        axios.post('/api/shamirshare', {
                 emails: this.state.emails
         }, { headers: {"Authorization": "Bearer " + Cookies.get('token')}
         }).then((response) => {
             this.setState({
-                publicKey: response.data,
+                publicKey: response.data.trim(),
                 keyGenerated: true
             })
         })

@@ -21,7 +21,7 @@ class EnterOtp extends Component {
 
     async componentDidMount() {
         if (!Cookies.get('token')) { window.location.replace('/'); }
-        axios.get("http://localhost:8000/users/me/sendOTP",
+        axios.get("/api/users/me/sendOTP",
                         {headers: {"Authorization": "Bearer " + Cookies.get('token')}}
         ).then((response) => {
             this.setState({ otpSent: true });
@@ -64,7 +64,7 @@ class EnterOtp extends Component {
         var tokenVal=Cookies.get('token')
         //var tokenVal=JSON.stringify(Cookies.get('token'))
         axios.post(
-                "http://localhost:8000/users/me/verifyOTP", 
+                "/api/users/me/verifyOTP", 
                 {
                     "otpInp": this.state.otp,
                     "ethAcctInp" : this.state.ethereumaddress,
