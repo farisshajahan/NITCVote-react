@@ -54,7 +54,7 @@ class Elections extends Component {
                 .call();
             if(Cookies.get('token')){
                 const eligible = await axios.get("http://localhost:8000/users/me/eligible",
-                                {headers: {"Authorization": "Bearer "+Cookies.get('token')}});
+                                {headers: {"Authorization": "Bearer " + Cookies.get('token')}});
                 addresses = eligible.data.filter(election => addresses.includes(election.id))
                                          .map(election => election.id);
                 this.setState({submitted : eligible.data.filter(election => election.submitted == true)

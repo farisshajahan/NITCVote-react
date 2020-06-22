@@ -35,7 +35,7 @@ class OptionsTablePastElection extends Component {
                 .getResults()
                 .call(),
             electionManager: await this.props.contract.methods
-                .electionManager()
+                .registrationAuthority()
                 .call()
         });
     }

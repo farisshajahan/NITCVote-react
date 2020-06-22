@@ -5,6 +5,7 @@ import {
     Form,
     Button,
     Segment,
+    Icon
 } from "semantic-ui-react";
 import { DateTimeInput } from "semantic-ui-calendar-react";
 import Election from "../ethereum/Election.json";
@@ -13,6 +14,8 @@ import convertTimeStringToDate from "../utils/convertTimeStringToDate";
 import addresses from "../ethereum/addresses";
 import Web3 from "web3";
 import ProcessingModal from "./ProcessingModal";
+import axios from "axios";
+import Cookies from "js-cookie";
 
 class CreateNewElection extends Component {
     state = {
@@ -32,7 +35,9 @@ class CreateNewElection extends Component {
         modalState: "",
         errorMessage: "",
         publicKey: "",
-        publicKeyChangedOnce: false
+        publicKeyChangedOnce: false,
+        keyGenerated: false,
+        emails: ["", ""]
     };
 
     async componentDidMount() {
@@ -160,6 +165,37 @@ class CreateNewElection extends Component {
         this.setState({ modalOpen: false });
     };
 
+    generateKeys = () => {
+        axios.post('http://localhost:8000/shamirshare', {
+                emails: this.state.emails
+        }, { headers: {"Authorization": "Bearer " + Cookies.get('token')}
+        }).then((response) => {
+            this.setState({
+                publicKey: response.data,
+                keyGenerated: true
+            })
+        })
+    }
+
+    handleEmailChange = (index) => evt => {
+        this.setState({ emails: this.state.emails.map((email, idx) => {
+            if (idx !== index) return email;
+            else return evt.target.value;
+        })})
+    }
+
+    handleRemoveEmail = (index) => () => {
+        this.setState({
+            emails: this.state.emails.filter((email, idx) => idx !== index)
+        })
+    }
+
+    handleAddEmail = () => {
+        this.setState({
+            emails: [...this.state.emails, ""]
+        })
+    }
+
     render() {
         return (
             <React.Fragment>
@@ -251,6 +287,38 @@ class CreateNewElection extends Component {
                         Encryption Settings
                     </Header>
                     <Segment attached>
+                        {this.state.emails.map((part, idx) => (
+                            <div>
+                            <div style={{ margin: "5px 0" }}>
+                                <strong>Email {idx+1}</strong>
+                                <Icon
+                                    onClick={this.handleRemoveEmail(idx)}
+                                    name="trash alternate"
+                                    color="red"
+                                    style={{ cursor: "pointer"}}
+                                />
+                            </div>
+                            <Form.Input
+                                value={part}
+                                onChange={this.handleEmailChange(idx)}
+                            />
+                            </div>
+                        ))}
+                        <Button
+                            type="button"
+                            onClick={this.handleAddEmail}
+                            style={{ width: "100%", margin: "10px 0" }}
+                        >
+                            Add Email
+                        </Button>
+                        <Button
+                            type="button"
+                            onClick={this.generateKeys}
+                            color="green"
+                            style={{ width: "100%", marginBottom: "10px" }}
+                        >
+                            Generate Keys
+                        </Button>
                         <Form.TextArea
                             label="Public key"
                             name="publicKey"
@@ -258,6 +326,7 @@ class CreateNewElection extends Component {
                             value={this.state.publicKey}
                             onChange={this.handleChange}
                             fluid
+                            disabled={!this.state.keyGenerated}
                             error={
                                 !this.state.publicKey && this.state.publicKeyChangedOnce
                             }
