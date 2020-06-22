@@ -7,7 +7,7 @@ import {
     Segment,
 } from "semantic-ui-react";
 import Cookies from 'js-cookie';
-
+import ProcessingModal from "./ProcessingModal";
 
 
     
@@ -21,6 +21,9 @@ class Register extends Component {
         password: "",
         passwordChangedOnce: false,
         errorMessage: "",
+        errorMessageDetailed:"",
+        modalOpen: false,
+        modalState: ""
         
     };
 
@@ -56,25 +59,41 @@ class Register extends Component {
     handleSubmit = async event => {
         
         event.preventDefault();
-        const axios = require('axios');
+        this.setState({ modalOpen: true, modalState: "processing" });
+        
+        try
+        {
+            const axios = require('axios');
 
-        axios.post('/api/users/login', {
+            axios.post('/api/users/login', {
 
-          email: this.state.email,
-          password: this.state.password
-        })
-        .then((response) => {
-            var UserInfo = response.data;
-            Cookies.set('token', UserInfo.token, { expires: 1 })
-            Cookies.set('user', UserInfo.user, { expires: 1 })
-            window.location.replace('/')
-        }).catch( (error) => {
-            var errorObj = Object.assign({}, error);
-            var errorMssg = errorObj.response.data.error;
-             console.log(error);
-            alert(errorMssg);   
-        });
+              email: this.state.email,
+              password: this.state.password
+            })
+            .then((response) => {
+                var UserInfo = response.data;
+                Cookies.set('token', UserInfo.token, { expires: 1 })
+                Cookies.set('user', UserInfo.user, { expires: 1 })
+                this.setState({ modalState: "success" });
+                window.location.replace('/')
+                
+            }).catch( (error) => {
+                var errorObj = Object.assign({}, error);
+                var errorMssg = errorObj.response.data.error;
+                 console.log(error);
+                //alert(errorMssg);  
+                this.setState({ modalState: "error", errorMessage: errorMssg, errorMessageDetailed: "We encountered an error. Please try again." });  
+            });
+        }
+        catch (err) {
+            this.setState({ modalState: "error", errorMessage: "We encountered an error. Please try again." ,errorMessageDetailed: err.message}); 
+    
+        }   
 };
+
+  handleModalClose = () => {
+        this.setState({ modalOpen: false });
+    };
  
 
     
@@ -90,6 +109,16 @@ class Register extends Component {
                 {Cookies.get('token') ? (
                     <Redirect to="/" />
                 ) : null}
+
+                <ProcessingModal
+                    modalOpen={this.state.modalOpen}
+                    modalState={this.state.modalState}
+                    handleModalClose={this.handleModalClose}
+                    errorMessageDetailed={this.state.errorMessageDetailed}
+                    processingMessage="This usually takes around 30 seconds. Please stay with us."
+                    errorMessage={this.state.errorMessage}
+                    successMessage="Logged in Successfully!"
+                />
 
                 <Header as="h1">Login</Header>
 
@@ -127,6 +156,7 @@ class Register extends Component {
                         <Button 
                             type="submit"
                             fluid
+                            loading={this.state.modalState === "processing"}
                             color="green"
                             disabled={!this.state.inputsValid}
                             

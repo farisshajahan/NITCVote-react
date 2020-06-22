@@ -8,6 +8,7 @@ import {
 } from "semantic-ui-react";
 import Cookies from "js-cookie";
 import axios from "axios";
+import ProcessingModal from "./ProcessingModal";
 
 class EnterOtp extends Component {
     state = {
@@ -15,7 +16,10 @@ class EnterOtp extends Component {
         emailChangedOnce: false,
         otp: "",
         passwordChangedOnce: false,
-        errorMessage: "",
+        modalOpen: false,
+        modalState: "",
+        errorMessage:"",
+        errorMessageDetailed:"",
         otpSent: false
     };
 
@@ -60,31 +64,49 @@ class EnterOtp extends Component {
     handleSubmit = async event => {
         
         event.preventDefault();
-        const axios = require('axios');
-        var tokenVal=Cookies.get('token')
-        //var tokenVal=JSON.stringify(Cookies.get('token'))
-        axios.post(
-                "/api/users/me/verifyOTP", 
-                {
-                    "otpInp": this.state.otp,
-                    "ethAcctInp" : this.state.ethereumaddress,
-                    "electionId": this.props.match.params.address
-                },
-                { headers: {"Authorization" : `Bearer ${tokenVal}`} }
-            )
-            .then((response) => {
-                alert("Ethereum Account Address registered successfully!")
-                this.props.history.push("/")
-            }, (error) => {
-            var errorObj = Object.assign({}, error);
-            var errorMssg = errorObj.response.data.error;
-             console.log(error);
-            alert(errorMssg);
-           
-        });       
+        this.setState({ modalOpen: true, modalState: "processing" });
+        
+        try
+        {
+            const axios = require('axios');
+            var tokenVal=Cookies.get('token')
+            //var tokenVal=JSON.stringify(Cookies.get('token'))
+            axios.post(
+                    "/api/users/me/verifyOTP", 
+                    {
+                        "otpInp": this.state.otp,
+                        "ethAcctInp" : this.state.ethereumaddress,
+                        "electionId": this.props.match.params.address
+                    },
+                    { headers: {"Authorization" : `Bearer ${tokenVal}`} }
+                )
+                .then((response) => {
+                    this.setState({ modalState: "success" });
+                    this.props.history.push("/")
+                    
+                }).catch( (error) => {
+                var errorObj = Object.assign({}, error);
+                var errorMssg = errorObj.response.data.error;
+                 console.log(error);
+                //alert(errorMssg);  
+                this.setState({ modalState: "error", errorMessage: errorMssg, errorMessageDetailed: "We encountered an error. Please try again." });  
+            });
+        }
+        catch (err) {
+            this.setState({ modalState: "error", errorMessage: "We encountered an error. Please try again." ,errorMessageDetailed: err.message}); 
+    
+        }       
         
         
     };
+
+    handleModalClose = () => {
+        this.setState({ modalOpen: false });
+    };
+
+        
+        
+    
     
  
 
@@ -97,6 +119,16 @@ class EnterOtp extends Component {
                 {this.state.wrongNetwork ? (
                     <Redirect to="/wrongnetwork" />
                 ) : null}
+
+                <ProcessingModal
+                    modalOpen={this.state.modalOpen}
+                    modalState={this.state.modalState}
+                    handleModalClose={this.handleModalClose}
+                    errorMessageDetailed={this.state.errorMessageDetailed}
+                    processingMessage="This usually takes around 30 seconds. Please stay with us."
+                    errorMessage={this.state.errorMessage}
+                    successMessage="Ethereum Address registered successfully!"
+                />
 
                 <Header as="h1">Ethereum Address Registration</Header>
 
@@ -138,6 +170,7 @@ class EnterOtp extends Component {
                         <Button 
                             type="submit"
                             fluid
+                            loading={this.state.modalState === "processing"}
                             color="green"
                             disabled={!this.state.inputsValid}
                             
