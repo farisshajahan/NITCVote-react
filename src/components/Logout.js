@@ -9,6 +9,7 @@ export default function Logout() {
         ).then((response) => {
             Cookies.remove('user');
             Cookies.remove('token');
+            Cookies.remove('pic');
             window.location.replace('/');
         });
     } else window.location.replace('/');

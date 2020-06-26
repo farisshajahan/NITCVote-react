@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
-import { Menu, Icon, Dropdown } from "semantic-ui-react";
+import { Menu, Icon, Dropdown, Image } from "semantic-ui-react";
+import Cookies from "js-cookie";
 
 class Header extends Component {
     render() {
@@ -15,9 +16,20 @@ class Header extends Component {
                         Install Metamask
                     </Menu.Item>
                     { this.props.login ?
-                    (<Dropdown item text={this.props.login}>
-                        <Dropdown.Menu>
-                            <Dropdown.Item as={Link} to="/logout">
+                    (<Dropdown item text="My Account">
+                        <Dropdown.Menu style={{width: "180px"}}>
+                            <Dropdown.Item
+                                style={{height: "70px", display:"flex", alignItems: "center", justifyContent:"center"}}
+                            >
+                                <Image
+                                    src={Cookies.get('pic')}
+                                    style={{borderRadius: "50%"}}
+                                /> {this.props.login}
+                            </Dropdown.Item>
+                            <Dropdown.Item
+                                style={{display:"flex", margin: "5px", color: "red", alignItems: "center", justifyContent:"center"}}
+                                as={Link} to="/logout"
+                            >
                                 Logout
                             </Dropdown.Item>
                         </Dropdown.Menu>

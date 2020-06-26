@@ -27,13 +27,14 @@ class App extends Component {
                     />
 
                     <Switch>
-                        <Route path="/" exact component={Elections} />
+                        <Route path="/" exact component={Register} />
                         <Route path="/metamask" component={Metamask} />
                         <Route
                             path="/wrongnetwork"
                             component={MetamaskWrongNetwork}
                         />
                         <Route path="/login" component={Register} />
+                        <Route path="/elections" component={Elections} />
                         <Route
                             path="/registrationauthority/:address"
                             component={RegistrationAuthority}

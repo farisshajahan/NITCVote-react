@@ -7,17 +7,15 @@ import {
     Segment,
 } from "semantic-ui-react";
 import Cookies from 'js-cookie';
-import ProcessingModal from "./ProcessingModal";
-
-
-    
+import {GoogleLogin, GoogleLogout} from "react-google-login";
+import axios from "axios";
 
 class Register extends Component {
     state = {
 
         email: "",
         emailChangedOnce: false,
-        
+        accessToken: "",
         password: "",
         passwordChangedOnce: false,
         errorMessage: "",
@@ -56,50 +54,30 @@ class Register extends Component {
         });
     };
 
-    handleSubmit = async event => {
-        
-        event.preventDefault();
-        //this.setState({ modalOpen: true, modalState: "processing" });
-        
-        try
-        {
-            const axios = require('axios');
-
-            axios.post('/api/users/login', {
-
-              email: this.state.email,
-              password: this.state.password
-            })
-            .then((response) => {
-                var UserInfo = response.data;
-                Cookies.set('token', UserInfo.token, { expires: 1 })
-                Cookies.set('user', UserInfo.user, { expires: 1 })
-                this.setState({ modalState: "success" });
-                window.location.replace('/')
-                
-            }).catch( (error) => {
-                var errorObj = Object.assign({}, error);
-                var errorMssg = errorObj.response.data.error;
-                 console.log(error);
-                //alert(errorMssg);  
-                this.setState({ modalOpen: true, modalState: "error", errorMessage: errorMssg, errorMessageDetailed: "We encountered an error. Please try again." });  
-            });
-        }
-        catch (err) {
-            this.setState({ modalOpen: true, modalState: "error", errorMessage: "We encountered an error. Please try again." ,errorMessageDetailed: err.message}); 
-    
-        }   
-};
-
-  handleModalClose = () => {
-        this.setState({ modalOpen: false });
-    };
- 
-
+    googleResponse = (response) => {
+        console.log(response)
+        this.setState({
+            accessToken: response.tokenObj.id_token
+        });
+        axios.post("/api/users/login", {
+            id_token: response.tokenObj.id_token
+        }).then((response) => {
+            var UserInfo = response.data;
+            Cookies.set('token', UserInfo.token, { expires: 1 })
+            Cookies.set('user', UserInfo.user, { expires: 1 })
+            Cookies.set('pic', UserInfo.pic, { expires: 1 })
+            window.location.replace('/')
+        }).catch( (error) => {
+            var errorObj = Object.assign({}, error);
+            var errorMssg = errorObj.response.data.error;
+             console.log(error);
+            alert(errorMssg);
+        });
+    }
     
     render() {
         return (
-            <React.Fragment>
+            <div>
                 {this.state.redirect ? <Redirect to="/metamask" /> : null}
 
                 {this.state.wrongNetwork ? (
@@ -107,65 +85,38 @@ class Register extends Component {
                 ) : null}
 
                 {Cookies.get('token') ? (
-                    <Redirect to="/" />
+                    <Redirect to="/elections" />
                 ) : null}
 
-                <ProcessingModal
-                    modalOpen={this.state.modalOpen}
-                    modalState={this.state.modalState}
-                    handleModalClose={this.handleModalClose}
-                    errorMessageDetailed={this.state.errorMessageDetailed}
-                    processingMessage="This usually takes around 30 seconds. Please stay with us."
-                    errorMessage={this.state.errorMessage}
-                    successMessage="Logged in Successfully!"
-                />
-
-                <Header as="h1">Login</Header>
-
-                <Form onSubmit={this.handleSubmit} warning>
-                    
-                    <Segment attached>
-                        <Form.Input
-                            label="Email"
-                            placeholder="Email"
-                            name="email"
-                            value={this.state.email}
-                            onChange={this.handleChange}
-                            fluid
-                            error={
-                                !this.state.email&& this.state.emailChangedOnce
-                            }
+                <Header as="h4" 
+                    style={{display:"flex", alignItems:"center", justifyContent:"center", color:"#3283a8"}}
+                >
+                    An Online Voting System for NITC
+                </Header>
+                <div style={{width: "100%", height:"60vh", display:"flex", flexDirection: "column", justifyContent:"center"}}>
+                    <div style={{display:"flex", alignItems:"center", justifyContent:"center", margin: "30px 0"}}>
+                        <GoogleLogin
+                            clientId="887688664674-jqpj4g1ap81heko2lcchg79venfitm52.apps.googleusercontent.com"
+                            onSuccess={this.googleResponse}
+                            theme='dark'
+                            buttonText="Sign in with Google"
+                            responseType='code,token'
+                            hostedDomain="nitc.ac.in"
                         />
-                        <Form.Input
-                            type="password"
-                            label="Password"
-                            name="password"
-                            placeholder="Enter Password"
-                            value={this.state.password}
-                            onChange={this.handleChange}
-                            fluid
-                            error={
-                                !this.state.password && this.state.passwordChangedOnce
-                            }
-                        />
-
-                    </Segment>
-                        
-
-                    <Segment vertical>
-                        <Button 
-                            type="submit"
-                            fluid
-                            loading={this.state.modalState === "processing"}
-                            color="green"
-                            disabled={!this.state.inputsValid}
-                            
+                    </div>
+                    <div style={{display:"flex", alignItems:"center", justifyContent:"center", margin: "30px 0"}}>
+                        <Button
+                            type="button"
+                            href="#/elections"
+                            size="large"
+                            style={{borderRadius: "10px", background: "#3283a8", color:"white"}}
                         >
-                            Login
+                            Vote for an election
                         </Button>
-                    </Segment>
-                </Form>
-            </React.Fragment>
+                    </div>
+                </div>
+
+            </div>
         );
     }
 }
