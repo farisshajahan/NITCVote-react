@@ -55,10 +55,6 @@ class Register extends Component {
     };
 
     googleResponse = (response) => {
-        console.log(response)
-        this.setState({
-            accessToken: response.tokenObj.id_token
-        });
         axios.post("/api/users/login", {
             id_token: response.tokenObj.id_token
         }).then((response) => {
