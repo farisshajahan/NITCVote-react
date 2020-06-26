@@ -6,6 +6,7 @@ import RegAuthInfoMessage from "../RegAuthInfoMessage";
 import EnterOtpMessage from "../EnterOtpMessage";
 import Cookies from "js-cookie";
 import RegisteredMessage from "../RegisteredMessage";
+import NotEligibleMessage from "../NotEligibleMessage";
 
 class ElectionCard extends Component {
     render() {
@@ -57,9 +58,11 @@ class ElectionCard extends Component {
                             <RegAuthInfoMessage
                                   electionid={this.props.address}
                             /> ) : Cookies.get('token') ?
-                                this.props.submitted.includes(this.props.address) ?
-                                (<RegisteredMessage />) :
-                                (<EnterOtpMessage electionid={this.props.address}/>)
+				this.props.eligible ?
+                                        this.props.submitted ?
+                                        (<RegisteredMessage />) :
+                                        (<EnterOtpMessage electionid={this.props.address}/>)
+                                : <NotEligibleMessage />
                                 : null
                             }
 

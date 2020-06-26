@@ -19,7 +19,8 @@ class OptionsTableActiveElection extends Component {
         voteLimit: 1,
         modalOpen: false,
         modalState: "",
-        errorMessage: ""
+        errorMessage: "",
+	receipt: ""
     };
 
     toggle = e => {
@@ -37,11 +38,14 @@ class OptionsTableActiveElection extends Component {
         this.setState({ modalOpen: true, modalState: "processing" });
 
         try {
-            await this.props.contract.methods
+            this.props.contract.methods
                 .vote(this.encryptVotes())
-                .send({ from: this.props.userAddresses[0] });
-
-            this.setState({ modalState: "success" });
+                .send({ from: this.props.userAddresses[0] })
+		.then(receipt => {
+			this.setState({ receipt: JSON.stringify(receipt),
+					modalState: "success"
+			});
+		});
         } catch (err) {
             this.setState({ modalState: "error", errorMessage: err.message });
         }
@@ -78,7 +82,7 @@ class OptionsTableActiveElection extends Component {
                     errorMessageDetailed={this.state.errorMessage}
                     processingMessage="This usually takes around 15 seconds. Please stay with us."
                     errorMessage="We encountered an error. Please try again."
-                    successMessage="Your vote has been counted. Thank you."
+                    successMessage={"Your vote has been counted. Thank you.\nReceipt: "+this.state.receipt}
                 />
 
                 <Table celled compact unstackable>

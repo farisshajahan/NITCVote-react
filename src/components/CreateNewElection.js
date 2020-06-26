@@ -129,8 +129,7 @@ class CreateNewElection extends Component {
                 this.state.title &&
                 this.state.description &&
                 this.state.startTime &&
-                this.state.timeLimit &&
-                this.state.publicKey
+                this.state.timeLimit
             ) {
                 this.setState({ inputsValid: true });
             } else {
@@ -206,6 +205,8 @@ class CreateNewElection extends Component {
                 ) : null}
 
                 {this.state.userIsManager ? null : <Redirect to="/" />}
+
+		{Cookies.get('token') ? null : <Redirect to="/" />}
 
                 <ProcessingModal
                     modalOpen={this.state.modalOpen}
@@ -324,7 +325,6 @@ class CreateNewElection extends Component {
                             name="publicKey"
                             placeholder="Enter Public key for encryption"
                             value={this.state.publicKey}
-                            onChange={this.handleChange}
                             fluid
                             disabled={!this.state.keyGenerated}
                             error={
@@ -341,7 +341,7 @@ class CreateNewElection extends Component {
                             fluid
                             loading={this.state.modalState === "processing"}
                             color="green"
-                            disabled={!this.state.inputsValid}
+                            disabled={!(this.state.inputsValid && this.state.keyGenerated)}
                         >
                             Create
                         </Button>

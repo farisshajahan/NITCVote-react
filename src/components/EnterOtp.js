@@ -64,7 +64,7 @@ class EnterOtp extends Component {
     handleSubmit = async event => {
         
         event.preventDefault();
-        this.setState({ modalOpen: true, modalState: "processing" });
+       this.setState({ modalOpen: true, modalState: "processing" });
         
         try
         {
@@ -82,19 +82,16 @@ class EnterOtp extends Component {
                 )
                 .then((response) => {
                     this.setState({ modalState: "success" });
-                    this.props.history.push("/")
-                    
                 }).catch( (error) => {
                 var errorObj = Object.assign({}, error);
                 var errorMssg = errorObj.response.data.error;
                  console.log(error);
                 //alert(errorMssg);  
-                this.setState({ modalState: "error", errorMessage: errorMssg, errorMessageDetailed: "We encountered an error. Please try again." });  
+                this.setState({modalState: "error", errorMessage: errorMssg, errorMessageDetailed: "We encountered an error. Please try again." });
             });
         }
         catch (err) {
-            this.setState({ modalState: "error", errorMessage: "We encountered an error. Please try again." ,errorMessageDetailed: err.message}); 
-    
+            this.setState({modalState: "error", errorMessage: "We encountered an error. Please try again." ,errorMessageDetailed: err.message});
         }       
         
         
@@ -102,6 +99,7 @@ class EnterOtp extends Component {
 
     handleModalClose = () => {
         this.setState({ modalOpen: false });
+	this.props.history.push('/');
     };
 
         

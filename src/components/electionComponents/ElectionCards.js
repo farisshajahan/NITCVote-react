@@ -43,7 +43,8 @@ class ElectionCards extends Component {
                             address={election.address}
                             activeItem={activeItem}
                             title={election.title}
-                            submitted={this.props.submitted}
+                            submitted={this.props.submitted.includes(election.address)}
+			    eligible={this.props.eligible.includes(election.address)}
                             description={election.description}
                             startTime={election.startTime}
                             timeLimit={election.timeLimit}

@@ -22,7 +22,8 @@ class Elections extends Component {
         wrongNetwork: false,
         activeItem: "current",
         elections: [],
-        submitted: []
+        submitted: [],
+	eligible: []
     };
 
     async componentDidMount() {
@@ -55,10 +56,10 @@ class Elections extends Component {
             if(Cookies.get('token')){
                 const eligible = await axios.get("/api/users/me/eligible",
                                 {headers: {"Authorization": "Bearer " + Cookies.get('token')}});
-                addresses = eligible.data.filter(election => addresses.includes(election.id))
-                                         .map(election => election.id);
                 this.setState({submitted : eligible.data.filter(election => election.submitted == true)
-                                                        .map(election => election.id)});
+                                                        .map(election => election.id),
+				eligible: eligible.data.map(election => election.id)
+		});
             }
 
             const userAddresses = await web3.eth.getAccounts();
@@ -140,6 +141,7 @@ class Elections extends Component {
     render() {
         return (
             <React.Fragment>
+
                 {this.state.userIsRegAuthority && this.state.showLoader === false ? (
                     <ManagerInfoMessage />
                 ) : null}
@@ -163,6 +165,7 @@ class Elections extends Component {
                 <ElectionCards
                     elections={this.state.elections}
                     submitted={this.state.submitted}
+		    eligible={this.state.eligible}
                     activeItem={this.state.activeItem}
                     userIsRegAuthority={this.state.userIsRegAuthority}
                 />
